@@ -122,11 +122,11 @@ export default function JournalPage() {
         <CardHeader>
           <CardTitle>How are you feeling today?</CardTitle>
           <CardDescription>
-            Select a mood to get a personalized journal prompt, or just start writing and let Saathi understand.
+            Select a mood to get a personalized journal prompt, or just start writing.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             {moods.map((mood) => (
               <Button
                 key={mood.name}
@@ -134,12 +134,12 @@ export default function JournalPage() {
                 onClick={() => setSelectedMood(mood.name)}
                 className="flex-grow rounded-lg p-6 text-lg sm:flex-grow-0"
               >
-                <span className="mr-2 text-2xl">{mood.emoji}</span> {mood.name}
+                <span className="mr-3 text-3xl">{mood.emoji}</span> {mood.name}
               </Button>
             ))}
           </div>
           
-          <div className="space-y-4 rounded-lg border bg-card p-4">
+          <div className="space-y-4 rounded-lg border bg-background/50 p-4">
               {selectedMood && (
                 <div className="space-y-4">
                   <Button onClick={handleGetPrompt} disabled={isPromptLoading}>
@@ -162,14 +162,16 @@ export default function JournalPage() {
                 onChange={(e) => setJournalText(e.target.value)}
                 rows={10}
               />
-              <Button onClick={handleSaveEntry} disabled={!journalText.trim() || isSaving}>
-                 {isSaving ? (
-                  <LoaderCircle className="mr-2 animate-spin" />
-                ) : (
-                  !selectedMood && <BrainCircuit className="mr-2" />
-                )}
-                {isSaving ? 'Saving...' : (selectedMood ? 'Save Entry' : 'Analyze & Save')} (+1 Growth Point)
-              </Button>
+              <div className="flex justify-end">
+                <Button onClick={handleSaveEntry} disabled={!journalText.trim() || isSaving}>
+                   {isSaving ? (
+                    <LoaderCircle className="mr-2 animate-spin" />
+                  ) : (
+                    !selectedMood && <BrainCircuit className="mr-2" />
+                  )}
+                  {isSaving ? 'Saving...' : (selectedMood ? 'Save Entry' : 'Analyze & Save')} (+1 Growth Point)
+                </Button>
+              </div>
             </div>
         </CardContent>
       </Card>
@@ -177,12 +179,12 @@ export default function JournalPage() {
       <div className="space-y-4">
         <h2 className="text-2xl font-headline">Past Entries</h2>
         {entries.length > 0 ? (
-          <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {entries.map((entry) => (
-              <Card key={entry.id}>
+              <Card key={entry.id} className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
-                    <span>{moods.find((m) => m.name === entry.mood)?.emoji}</span>
+                    <span className="text-2xl">{moods.find((m) => m.name === entry.mood)?.emoji}</span>
                     {entry.mood}
                   </CardTitle>
                   <CardDescription>
@@ -191,21 +193,23 @@ export default function JournalPage() {
                     })}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   {entry.prompt && (
                     <p className="mb-2 rounded-md bg-muted/50 p-2 text-sm italic">
                       Prompt: "{entry.prompt}"
                     </p>
                   )}
-                  <p className="whitespace-pre-wrap">{entry.content}</p>
+                  <p className="whitespace-pre-wrap line-clamp-6">{entry.content}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground">
-            You have no journal entries yet.
-          </p>
+          <Card className="flex items-center justify-center p-12">
+            <p className="text-center text-muted-foreground">
+              You have no journal entries yet.
+            </p>
+          </Card>
         )}
       </div>
     </div>

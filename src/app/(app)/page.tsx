@@ -84,47 +84,47 @@ export default function ChatPage() {
   return (
     <div className="flex h-full flex-col">
       <h1 className="hidden text-3xl font-headline md:block mb-4">Chat with Saathi</h1>
-      <Card className="flex flex-1 flex-col">
+      <Card className="flex flex-1 flex-col overflow-hidden">
         <CardContent className="flex-1 p-0">
           <ScrollArea className="h-[calc(100svh-16rem)] md:h-[calc(100svh-18rem)]">
-             <div className="space-y-6 p-6" ref={viewportRef}>
+             <div className="space-y-6 p-4 md:p-6" ref={viewportRef}>
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={cn(
-                    "flex items-start gap-4",
+                    "flex items-start gap-3",
                     message.role === "user" ? "justify-end" : ""
                   )}
                 >
                   {message.role === "assistant" && (
-                    <Avatar className="h-10 w-10 border-2 border-primary/20">
-                      <div className="flex h-full w-full items-center justify-center bg-primary/20">
-                        <SaathiIcon className="h-6 w-6 text-primary" />
+                    <Avatar className="h-9 w-9 border-2 border-primary/20">
+                      <div className="flex h-full w-full items-center justify-center bg-primary/10">
+                        <SaathiIcon className="h-5 w-5 text-primary" />
                       </div>
                     </Avatar>
                   )}
                   <div
                     className={cn(
-                      "max-w-md rounded-2xl p-4",
+                      "max-w-md rounded-2xl p-3 px-4",
                       message.role === "user"
-                        ? "rounded-br-none bg-primary/80 text-primary-foreground"
+                        ? "rounded-br-none bg-primary/90 text-primary-foreground"
                         : "rounded-bl-none bg-muted"
                     )}
                   >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   </div>
                   {message.role === "user" && (
-                    <Avatar className="h-10 w-10 border-2 border-accent/20">
+                    <Avatar className="h-9 w-9 border">
                       <AvatarFallback>You</AvatarFallback>
                     </Avatar>
                   )}
                 </div>
               ))}
               {isLoading && (
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-10 w-10 border-2 border-primary/20">
-                    <div className="flex h-full w-full items-center justify-center bg-primary/20">
-                      <SaathiIcon className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-9 w-9 border-2 border-primary/20">
+                    <div className="flex h-full w-full items-center justify-center bg-primary/10">
+                      <SaathiIcon className="h-5 w-5 text-primary" />
                     </div>
                   </Avatar>
                   <div className="flex max-w-md items-center rounded-2xl rounded-bl-none bg-muted p-4">
@@ -135,7 +135,7 @@ export default function ChatPage() {
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter className="border-t p-4">
+        <CardFooter className="border-t p-4 bg-background/50">
           <form
             onSubmit={handleSubmit}
             className="flex w-full items-center gap-4"
