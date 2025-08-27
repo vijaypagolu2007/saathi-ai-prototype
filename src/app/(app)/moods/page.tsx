@@ -1,3 +1,4 @@
+
 "use client";
 
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from "recharts";
@@ -39,12 +40,15 @@ export default function MoodsPage() {
         isSameDay(parseISO(entry.date), day)
       );
 
-      let totalScore = 0;
-      entriesForDay.forEach(entry => {
-        totalScore += entry.moodScore;
-      });
+      if (entriesForDay.length === 0) {
+        return {
+          date: format(day, "MMM d"),
+          averageScore: null,
+        };
+      }
       
-      const averageScore = entriesForDay.length > 0 ? totalScore / entriesForDay.length : null;
+      const totalScore = entriesForDay.reduce((sum, entry) => sum + entry.moodScore, 0);
+      const averageScore = totalScore / entriesForDay.length;
 
       return {
         date: format(day, "MMM d"),
@@ -139,3 +143,4 @@ export default function MoodsPage() {
     </div>
   );
 }
+
