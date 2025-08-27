@@ -64,7 +64,8 @@ export default function JournalPage() {
     try {
       const result = await generateJournalPrompt({ mood: selectedMood });
       setPrompt(result.prompt);
-    } catch (error)      console.error("Failed to generate prompt:", error);
+    } catch (error) {
+      console.error("Failed to generate prompt:", error);
       setPrompt(
         "Could not get a prompt. Why not write about what's on your mind?"
       );
@@ -333,4 +334,3 @@ export default function JournalPage() {
     </div>
   );
 }
-
