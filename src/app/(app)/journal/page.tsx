@@ -13,7 +13,9 @@ import {
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { JournalEntry } from "@/lib/types";
 import { generateJournalPrompt } from "@/ai/flows/journal-prompt";
-import { WandSparkles, LoaderCircle } from "lucide-react";
+import { analyzeMood } from "@/ai/flows/mood-analysis";
+import { WandSparkles, LoaderCircle, BrainCircuit } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const moods = [
   { name: "Happy", emoji: "😊" },
@@ -32,7 +34,9 @@ export default function JournalPage() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [isPromptLoading, setIsPromptLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [journalText, setJournalText] = useState("");
+  const { toast } = useToast();
 
   const handleGetPrompt = async () => {
     if (!selectedMood) return;
@@ -51,20 +55,61 @@ export default function JournalPage() {
     }
   };
 
-  const handleSaveEntry = () => {
-    if (!journalText.trim() || !selectedMood) return;
-    const newEntry: JournalEntry = {
-      id: new Date().toISOString(),
-      date: new Date().toISOString(),
-      mood: selectedMood,
-      prompt: prompt,
-      content: journalText,
-    };
-    setEntries([newEntry, ...entries]);
-    setGrowthPoints((prev) => prev + 1);
-    setSelectedMood(null);
-    setPrompt("");
-    setJournalText("");
+  const handleSaveEntry = async () => {
+    if (!journalText.trim()) return;
+    setIsSaving(true);
+
+    let entryMood = selectedMood;
+    let moodAnalysis = null;
+
+    try {
+      if (!entryMood && journalText.trim()) {
+        const analysisResult = await analyzeMood({ text: journalText });
+        const foundMood = moods.find(m => m.name.toLowerCase() === analysisResult.mood.toLowerCase());
+        entryMood = foundMood ? foundMood.name : "Calm"; // Default to Calm if not found
+        moodAnalysis = analysisResult;
+        toast({
+            title: `Mood detected: ${entryMood}`,
+            description: "We've analyzed your entry to understand how you're feeling.",
+        });
+      }
+
+      if (!entryMood) {
+        // This case handles if mood analysis fails or text is empty, though we check for empty text earlier.
+        // For robustness, we could assign a default or prompt the user.
+        toast({
+          title: "Please select a mood",
+          description: "Select a mood before saving your entry.",
+          variant: "destructive",
+        });
+        setIsSaving(false);
+        return;
+      }
+
+      const newEntry: JournalEntry = {
+        id: new Date().toISOString(),
+        date: new Date().toISOString(),
+        mood: entryMood,
+        prompt: prompt,
+        content: journalText,
+        analysis: moodAnalysis ?? undefined,
+      };
+
+      setEntries([newEntry, ...entries]);
+      setGrowthPoints((prev) => prev + 1);
+      setSelectedMood(null);
+      setPrompt("");
+      setJournalText("");
+    } catch (error) {
+      console.error("Failed to save entry:", error);
+      toast({
+        title: "Error saving entry",
+        description: "There was a problem analyzing or saving your journal entry. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -75,7 +120,7 @@ export default function JournalPage() {
         <CardHeader>
           <CardTitle>How are you feeling today?</CardTitle>
           <CardDescription>
-            Select a mood to get a personalized journal prompt.
+            Select a mood to get a personalized journal prompt, or just start writing and let Saathi understand.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -91,31 +136,39 @@ export default function JournalPage() {
               </Button>
             ))}
           </div>
-
-          {selectedMood && (
-            <div className="space-y-4 rounded-lg border bg-card p-4">
-              <Button onClick={handleGetPrompt} disabled={isPromptLoading}>
-                {isPromptLoading ? (
-                  <LoaderCircle className="mr-2 animate-spin" />
-                ) : (
-                  <WandSparkles className="mr-2" />
-                )}
-                Get a prompt for '{selectedMood}'
-              </Button>
-              {prompt && (
-                <p className="rounded-md bg-muted p-4 italic">"{prompt}"</p>
+          
+          <div className="space-y-4 rounded-lg border bg-card p-4">
+              {selectedMood && (
+                <div className="space-y-4">
+                  <Button onClick={handleGetPrompt} disabled={isPromptLoading}>
+                    {isPromptLoading ? (
+                      <LoaderCircle className="mr-2 animate-spin" />
+                    ) : (
+                      <WandSparkles className="mr-2" />
+                    )}
+                    Get a prompt for '{selectedMood}'
+                  </Button>
+                  {prompt && (
+                    <p className="rounded-md bg-muted p-4 italic">"{prompt}"</p>
+                  )}
+                </div>
               )}
+            
               <Textarea
                 placeholder="Start writing here..."
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 rows={10}
               />
-              <Button onClick={handleSaveEntry} disabled={!journalText.trim()}>
-                Save Entry (+1 Growth Point)
+              <Button onClick={handleSaveEntry} disabled={!journalText.trim() || isSaving}>
+                 {isSaving ? (
+                  <LoaderCircle className="mr-2 animate-spin" />
+                ) : (
+                  !selectedMood && <BrainCircuit className="mr-2" />
+                )}
+                {isSaving ? 'Saving...' : (selectedMood ? 'Save Entry' : 'Analyze & Save')} (+1 Growth Point)
               </Button>
             </div>
-          )}
         </CardContent>
       </Card>
 

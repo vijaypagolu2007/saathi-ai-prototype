@@ -14,12 +14,13 @@ import {
 import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageCircle, BookHeart, Sparkles, Leaf } from "lucide-react";
+import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3 } from "lucide-react";
 import React from "react";
 
 const navItems = [
   { href: "/", label: "Chat", icon: MessageCircle },
   { href: "/journal", label: "Journal", icon: BookHeart },
+  { href: "/moods", label: "Moods", icon: BarChart3 },
   { href: "/resources", label: "Resources", icon: Sparkles },
   { href: "/tree", label: "My Tree", icon: Leaf },
 ];

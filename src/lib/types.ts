@@ -10,4 +10,9 @@ export type JournalEntry = {
   mood: string;
   prompt: string;
   content: string;
+  analysis?: {
+    mood: string;
+    valence: number;
+    energy: number;
+  };
 };
