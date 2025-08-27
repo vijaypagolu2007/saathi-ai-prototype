@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -19,12 +20,12 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCrisisAlert, setShowCrisisAlert] = useState(false);
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (viewportRef.current) {
-      viewportRef.current.scrollTo({
-        top: viewportRef.current.scrollHeight,
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
         behavior: "smooth",
       });
     }
@@ -86,8 +87,8 @@ export default function ChatPage() {
       <h1 className="hidden text-3xl font-headline md:block mb-4">Chat with Saathi</h1>
       <Card className="flex flex-1 flex-col overflow-hidden">
         <CardContent className="flex-1 p-0">
-          <ScrollArea className="h-[calc(100svh-16rem)] md:h-[calc(100svh-18rem)]">
-             <div className="space-y-6 p-4 md:p-6" ref={viewportRef}>
+          <ScrollArea className="h-[calc(100svh-16rem)] md:h-[calc(100svh-18rem)]" viewportRef={scrollAreaRef}>
+             <div className="space-y-6 p-4 md:p-6">
               {messages.map((message) => (
                 <div
                   key={message.id}
