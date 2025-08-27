@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from "recharts";
 import {
   Card,
   CardContent,
@@ -20,28 +20,9 @@ import { useMemo } from "react";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
 
 const chartConfig = {
-  valence: {
-    label: "Mood Valence",
-  },
-  Happy: {
-    label: "Happy",
+  averageScore: {
+    label: "Average Mood Score",
     color: "hsl(var(--chart-1))",
-  },
-  Sad: {
-    label: "Sad",
-    color: "hsl(var(--chart-2))",
-  },
-  Anxious: {
-    label: "Anxious",
-    color: "hsl(var(--chart-3))",
-  },
-  Calm: {
-    label: "Calm",
-    color: "hsl(var(--chart-4))",
-  },
-  Angry: {
-    label: "Angry",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
 
@@ -57,25 +38,17 @@ export default function MoodsPage() {
       const entriesForDay = entries.filter((entry) =>
         isSameDay(parseISO(entry.date), day)
       );
-      
-      let totalValence = 0;
-      let analyzedEntriesCount = 0;
-      const moodCounts: { [key: string]: number } = { Happy: 0, Sad: 0, Anxious: 0, Calm: 0, Angry: 0 };
 
+      let totalScore = 0;
       entriesForDay.forEach(entry => {
-        moodCounts[entry.mood] = (moodCounts[entry.mood] || 0) + 1;
-        if (entry.analysis?.valence) {
-          totalValence += entry.analysis.valence;
-          analyzedEntriesCount++;
-        }
+        totalScore += entry.moodScore;
       });
       
-      const averageValence = analyzedEntriesCount > 0 ? totalValence / analyzedEntriesCount : 0;
+      const averageScore = entriesForDay.length > 0 ? totalScore / entriesForDay.length : null;
 
       return {
         date: format(day, "MMM d"),
-        ...moodCounts,
-        averageValence,
+        averageScore: averageScore,
       };
     });
   }, [entries]);
@@ -86,53 +59,83 @@ export default function MoodsPage() {
     <div className="space-y-8">
       <h1 className="text-3xl font-headline">My Moods</h1>
       <p className="text-lg text-muted-foreground">
-        Visualize your mood trends over the last week based on your journal entries.
+        This chart shows your average mood score over the last week. Tracking your mood can help you notice patterns and reflect on your emotional well-being.
       </p>
 
       <Card>
         <CardHeader>
-          <CardTitle>7-Day Mood Summary</CardTitle>
+          <CardTitle>7-Day Mood Trend</CardTitle>
           <CardDescription>
-            Each bar shows the moods you've recorded on that day.
+            A higher score indicates more positive moods, while a lower score reflects more challenging days. A score of 0 is neutral.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {hasData ? (
-             <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-              <BarChart accessibilityLayer data={chartData}>
+             <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+              <LineChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
-                  tickMargin={10}
                   axisLine={false}
+                  tickMargin={8}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={10}
-                  allowDecimals={false}
-                  label={{ value: 'Number of Entries', angle: -90, position: 'insideLeft' }}
+                  tickMargin={8}
+                  domain={[-2, 2]}
+                  ticks={[-2, -1, 0, 1, 2]}
+                  tickFormatter={(value) => {
+                      if (value === 2) return "😀";
+                      if (value === 1) return "🙂";
+                      if (value === 0) return "😐";
+                      if (value === -1) return "😔";
+                      if (value === -2) return "😡/😰";
+                      return "";
+                  }}
                 />
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
                 />
-                <Bar dataKey="Happy" stackId="a" fill="var(--color-Happy)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Sad" stackId="a" fill="var(--color-Sad)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Anxious" stackId="a" fill="var(--color-Anxious)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Calm" stackId="a" fill="var(--color-Calm)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Angry" stackId="a" fill="var(--color-Angry)" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                <Line
+                  dataKey="averageScore"
+                  type="monotone"
+                  stroke="var(--color-averageScore)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--color-averageScore)",
+                  }}
+                  activeDot={{
+                    r: 6,
+                  }}
+                  connectNulls
+                />
+              </LineChart>
             </ChartContainer>
           ) : (
-            <div className="flex h-[250px] w-full items-center justify-center rounded-lg border-2 border-dashed">
-                <p className="text-muted-foreground">
+            <div className="flex h-[300px] w-full items-center justify-center rounded-lg border-2 border-dashed">
+                <p className="text-center text-muted-foreground">
                     No journal entries found for the last 7 days.
+                    <br />
+                    Start journaling to see your mood trends.
                 </p>
             </div>
           )}
         </CardContent>
       </Card>
+       <p className="text-sm text-center text-muted-foreground">
+          Remember, fluctuations in mood are normal. This tool is for self-reflection, not for diagnosis.
+        </p>
     </div>
   );
 }

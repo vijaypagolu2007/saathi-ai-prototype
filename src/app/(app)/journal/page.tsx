@@ -18,12 +18,13 @@ import { WandSparkles, LoaderCircle, BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const moods = [
-  { name: "Happy", emoji: "😊" },
-  { name: "Sad", emoji: "😢" },
-  { name: "Anxious", emoji: "😟" },
-  { name: "Calm", emoji: "😌" },
-  { name: "Angry", emoji: "😠" },
-];
+    { name: "Happy", emoji: "😀", score: 2 },
+    { name: "Calm", emoji: "🙂", score: 1 },
+    { name: "Neutral", emoji: "😐", score: 0 },
+    { name: "Sad", emoji: "😔", score: -1 },
+    { name: "Angry", emoji: "😡", score: -2 },
+    { name: "Anxious", emoji: "😰", score: -2 },
+  ];
 
 export default function JournalPage() {
   const [entries, setEntries] = useLocalStorage<JournalEntry[]>(
@@ -59,24 +60,24 @@ export default function JournalPage() {
     if (!journalText.trim()) return;
     setIsSaving(true);
 
-    let entryMood = selectedMood;
+    let entryMoodName = selectedMood;
     let moodAnalysis = null;
 
     try {
-      if (!entryMood && journalText.trim()) {
+      if (!entryMoodName && journalText.trim()) {
         const analysisResult = await analyzeMood({ text: journalText });
         const foundMood = moods.find(m => m.name.toLowerCase() === analysisResult.mood.toLowerCase());
-        entryMood = foundMood ? foundMood.name : "Calm"; // Default to Calm if not found
+        entryMoodName = foundMood ? foundMood.name : "Neutral";
         moodAnalysis = analysisResult;
         toast({
-            title: `Mood detected: ${entryMood}`,
+            title: `Mood detected: ${entryMoodName}`,
             description: "We've analyzed your entry to understand how you're feeling.",
         });
       }
 
-      if (!entryMood) {
-        // This case handles if mood analysis fails or text is empty, though we check for empty text earlier.
-        // For robustness, we could assign a default or prompt the user.
+      const finalMood = moods.find(m => m.name === entryMoodName) ?? moods.find(m => m.name === 'Neutral')!;
+      
+      if (!finalMood) {
         toast({
           title: "Please select a mood",
           description: "Select a mood before saving your entry.",
@@ -89,7 +90,8 @@ export default function JournalPage() {
       const newEntry: JournalEntry = {
         id: new Date().toISOString(),
         date: new Date().toISOString(),
-        mood: entryMood,
+        mood: finalMood.name,
+        moodScore: finalMood.score,
         prompt: prompt,
         content: journalText,
         analysis: moodAnalysis ?? undefined,

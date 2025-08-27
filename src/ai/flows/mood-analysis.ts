@@ -22,7 +22,7 @@ const MoodAnalysisOutputSchema = z.object({
   mood: z
     .string()
     .describe(
-      "The primary mood detected in the text (e.g., Happy, Sad, Anxious, Calm, Angry)."
+      "The primary mood detected in the text (e.g., Happy, Sad, Anxious, Calm, Angry, Neutral)."
     ),
   valence: z
     .number()
@@ -53,7 +53,7 @@ const prompt = ai.definePrompt({
   output: { schema: MoodAnalysisOutputSchema },
   prompt: `You are a mood analysis expert. Analyze the following journal entry and determine the primary mood, emotional valence, and energy level.
 
-The primary mood must be one of the following: Happy, Sad, Anxious, Calm, Angry.
+The primary mood must be one of the following: Happy, Sad, Anxious, Calm, Angry, Neutral.
 
 Valence is a score from -1 (very negative) to 1 (very positive).
 Energy is a score from 0 (low energy) to 1 (high energy).
@@ -64,6 +64,8 @@ For example:
 - "I'm worried about the upcoming exam." -> mood: Anxious, valence: -0.6, energy: 0.6
 - "Just sitting by the lake, so peaceful." -> mood: Calm, valence: 0.7, energy: 0.1
 - "I'm furious about what happened." -> mood: Angry, valence: -0.7, energy: 0.9
+- "Just a regular day, nothing special to report." -> mood: Neutral, valence: 0.0, energy: 0.4
+
 
 Journal Entry:
 {{{text}}}
