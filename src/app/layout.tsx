@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "SaathiAI Web",
   description: "Your anonymous mental wellness companion.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
