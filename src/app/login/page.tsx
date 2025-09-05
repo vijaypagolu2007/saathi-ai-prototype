@@ -36,7 +36,8 @@ export default function LoginPage() {
         const auth = getAuth();
         const result = await getRedirectResult(auth);
         if (result) {
-          // User is signed in. The useAuth hook will detect and redirect.
+          // User is signed in. The useAuth hook will detect this and redirect to '/'.
+          // The loading state will remain until the user object is confirmed by useAuth.
         }
       } catch (error: any) {
         toast({
