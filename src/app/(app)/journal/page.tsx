@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -11,7 +11,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { JournalEntry } from "@/lib/types";
 import { generateJournalPrompt } from "@/ai/flows/journal-prompt";
 import { analyzeMood } from "@/ai/flows/mood-analysis";
@@ -24,9 +23,10 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useMemo } from "react";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
-
+import { useAuth } from "@/context/auth-context";
+import { addJournalEntry, getJournalEntries } from "@/lib/firestore";
+import { getGrowthPoints, setGrowthPoints } from "@/lib/user-data";
 
 const moods = [
     { name: "Happy", emoji: "😀", score: 2 },
@@ -45,17 +45,27 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function JournalPage() {
-  const [entries, setEntries] = useLocalStorage<JournalEntry[]>(
-    "journal-entries",
-    []
-  );
-  const [, setGrowthPoints] = useLocalStorage<number>("growth-points", 0);
+  const { user } = useAuth();
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [isEntriesLoading, setIsEntriesLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [isPromptLoading, setIsPromptLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [journalText, setJournalText] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      if (user) {
+        setIsEntriesLoading(true);
+        const userEntries = await getJournalEntries(user.uid);
+        setEntries(userEntries);
+        setIsEntriesLoading(false);
+      }
+    };
+    fetchEntries();
+  }, [user]);
 
   const handleGetPrompt = async () => {
     if (!selectedMood) return;
@@ -66,16 +76,18 @@ export default function JournalPage() {
       setPrompt(result.prompt);
     } catch (error) {
       console.error("Failed to generate prompt:", error);
-      setPrompt(
-        "Could not get a prompt. Why not write about what's on your mind?"
-      );
+      toast({
+        title: "Error",
+        description: "Could not get a prompt. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsPromptLoading(false);
     }
   };
 
   const handleSaveEntry = async () => {
-    if (!journalText.trim()) return;
+    if (!journalText.trim() || !user) return;
     setIsSaving(true);
 
     let entryMoodName = selectedMood;
@@ -105,9 +117,8 @@ export default function JournalPage() {
         return;
       }
 
-      const newEntry: JournalEntry = {
-        id: new Date().toISOString(),
-        date: new Date().toISOString(),
+      const newEntry: Omit<JournalEntry, 'id' | 'userId' | 'date'> & { date: Date } = {
+        date: new Date(),
         mood: finalMood.name,
         moodScore: finalMood.score,
         prompt: prompt,
@@ -115,16 +126,27 @@ export default function JournalPage() {
         analysis: moodAnalysis ?? undefined,
       };
 
-      setEntries([newEntry, ...entries]);
-      setGrowthPoints((prev) => prev + 1);
+      await addJournalEntry(user.uid, newEntry);
+      
+      const updatedEntries = await getJournalEntries(user.uid);
+      setEntries(updatedEntries);
+
+      const currentPoints = await getGrowthPoints(user.uid);
+      await setGrowthPoints(user.uid, currentPoints + 1);
+
       setSelectedMood(null);
       setPrompt("");
       setJournalText("");
+       toast({
+        title: "Entry Saved!",
+        description: "Your journal entry has been saved and you've earned a growth point.",
+      });
+
     } catch (error) {
       console.error("Failed to save entry:", error);
       toast({
         title: "Error saving entry",
-        description: "There was a problem analyzing or saving your journal entry. Please try again.",
+        description: "There was a problem saving your journal entry. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -231,7 +253,7 @@ export default function JournalPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {hasData ? (
+          {isEntriesLoading ? <LoaderCircle className="mx-auto animate-spin" /> : hasData ? (
              <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
               <LineChart
                 accessibilityLayer
@@ -297,7 +319,7 @@ export default function JournalPage() {
       
       <div className="space-y-4">
         <h2 className="text-2xl font-headline">Past Entries</h2>
-        {entries.length > 0 ? (
+        {isEntriesLoading ? <LoaderCircle className="mx-auto animate-spin" /> : entries.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {entries.map((entry) => (
               <Card key={entry.id} className="flex flex-col">

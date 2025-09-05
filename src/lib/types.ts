@@ -6,6 +6,7 @@ export type ChatMessage = {
 
 export type JournalEntry = {
   id: string;
+  userId: string;
   date: string;
   mood: string;
   moodScore: number;

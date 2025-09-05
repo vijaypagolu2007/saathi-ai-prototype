@@ -15,10 +15,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { JournalEntry } from "@/lib/types";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
+import { useAuth } from "@/context/auth-context";
+import { getJournalEntries } from "@/lib/firestore";
+import { LoaderCircle } from "lucide-react";
 
 const chartConfig = {
   averageScore: {
@@ -28,7 +30,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function MoodsPage() {
-  const [entries] = useLocalStorage<JournalEntry[]>("journal-entries", []);
+  const { user } = useAuth();
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      if (user) {
+        setIsLoading(true);
+        const userEntries = await getJournalEntries(user.uid);
+        setEntries(userEntries);
+        setIsLoading(false);
+      }
+    };
+    fetchEntries();
+  }, [user]);
 
   const chartData = useMemo(() => {
     const last7Days = Array.from({ length: 7 }, (_, i) =>
@@ -74,7 +90,11 @@ export default function MoodsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {hasData ? (
+          {isLoading ? (
+            <div className="flex h-[300px] w-full items-center justify-center">
+                <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : hasData ? (
              <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
               <LineChart
                 accessibilityLayer
@@ -143,4 +163,3 @@ export default function MoodsPage() {
     </div>
   );
 }
-

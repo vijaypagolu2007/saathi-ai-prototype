@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useEffect, useState } from "react";
 import { ResilienceTree } from "@/components/resilience-tree";
 import {
   Card,
@@ -10,33 +10,45 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { Leaf } from "lucide-react";
+import { Leaf, LoaderCircle } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { getGrowthPoints, setGrowthPoints, getLastCheckIn, setLastCheckIn } from "@/lib/user-data";
 
 export default function TreePage() {
-  const [growthPoints, setGrowthPoints] = useLocalStorage<number>(
-    "growth-points",
-    0
-  );
-  const [lastCheckIn, setLastCheckIn] = useLocalStorage<string>(
-    "last-check-in",
-    ""
-  );
+  const { user } = useAuth();
+  const [growthPoints, setGrowthPointsState] = useState(0);
+  const [lastCheckIn, setLastCheckInState] = useState("");
   const [checkedInToday, setCheckedInToday] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const today = new Date().toDateString();
-    if (lastCheckIn !== today) {
-      setCheckedInToday(false);
-    } else {
-      setCheckedInToday(true);
-    }
-  }, [lastCheckIn]);
+    const loadUserData = async () => {
+      if (user) {
+        setIsLoading(true);
+        const points = await getGrowthPoints(user.uid);
+        const checkIn = await getLastCheckIn(user.uid);
+        setGrowthPointsState(points);
+        setLastCheckInState(checkIn);
 
-  const handleDailyCheckIn = () => {
+        const today = new Date().toDateString();
+        setCheckedInToday(checkIn === today);
+        setIsLoading(false);
+      }
+    };
+    loadUserData();
+  }, [user]);
+
+  const handleDailyCheckIn = async () => {
+    if (!user) return;
     const today = new Date().toDateString();
-    setGrowthPoints((prev) => prev + 1);
-    setLastCheckIn(today);
+    
+    const newPoints = growthPoints + 1;
+    await setGrowthPoints(user.uid, newPoints);
+    setGrowthPointsState(newPoints);
+    
+    await setLastCheckIn(user.uid, today);
+    setLastCheckInState(today);
+
     setCheckedInToday(true);
   };
 
@@ -49,6 +61,14 @@ export default function TreePage() {
       return "Look at that growth! Your tree is becoming a symbol of your strength.";
     return "Your resilience tree is flourishing! A testament to your dedication to your well-being.";
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center space-y-8 text-center">

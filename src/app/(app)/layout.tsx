@@ -6,6 +6,7 @@ import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
+  SidebarFooter,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -15,9 +16,13 @@ import {
 } from "@/components/ui/sidebar";
 import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3 } from "lucide-react";
-import React from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut } from "lucide-react";
+import React, { useEffect } from "react";
+import { useAuth } from "@/context/auth-context";
+import { Button } from "@/components/ui/button";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const navItems = [
   { href: "/", label: "Chat", icon: MessageCircle },
@@ -30,12 +35,20 @@ const navItems = [
 function AppNavigation() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+  const router = useRouter();
 
   const handleLinkClick = () => {
     setOpenMobile(false);
   };
+  
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
 
   return (
+    <>
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
@@ -54,10 +67,34 @@ function AppNavigation() {
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
+    <div className="mt-auto">
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLogout} tooltip={{ children: "Logout", side: "right" }}>
+                    <LogOut />
+                    <span>Logout</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
+    </div>
+    </>
   );
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+  
+  if (loading || !user) {
+    return null; // or a loading spinner
+  }
+  
   return (
     <SidebarProvider>
       <Sidebar>

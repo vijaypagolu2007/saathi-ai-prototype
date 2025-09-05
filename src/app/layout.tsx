@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AuthProvider } from "@/context/auth-context";
 
 export const metadata: Metadata = {
   title: "SaathiAI Web",
@@ -32,8 +33,10 @@ export default function RootLayout({
         />
       </head>
       <body className={cn("font-body antialiased")}>
-        {children}
-        <Toaster />
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
