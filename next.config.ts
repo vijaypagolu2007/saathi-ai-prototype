@@ -1,13 +1,8 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    allowedOrigins: [
-      'localhost:9003',
-      '9003-firebase-studio-xxxxx.cloudworkstations.dev'
-    ],
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
