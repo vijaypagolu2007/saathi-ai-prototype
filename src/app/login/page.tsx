@@ -23,8 +23,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
-  const auth = getAuth();
-
+  
   useEffect(() => {
     if (user) {
       router.push('/');
@@ -33,13 +32,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     const checkRedirect = async () => {
+      const auth = getAuth();
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          // The user has successfully signed in.
-          // The user state will be updated by the onAuthStateChanged listener,
-          // which will trigger the redirect in the other useEffect.
-          // We can set isRedirecting to false to show the main page briefly or keep it true.
+          // User is signed in.
+          // The useAuth hook will detect the user and redirect.
         }
       } catch (error: any) {
         toast({
@@ -53,11 +51,12 @@ export default function LoginPage() {
     };
 
     checkRedirect();
-  }, [auth, router, toast]);
+  }, [router, toast]);
 
 
   const handleAuthAction = async (action: 'login' | 'signup') => {
     setIsLoading(true);
+    const auth = getAuth();
     try {
       if (action === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -77,7 +76,8 @@ export default function LoginPage() {
   };
   
   const handleGoogleSignIn = async () => {
-    setIsLoading(true); // Show loading state on the button
+    setIsLoading(true);
+    const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
         await signInWithRedirect(auth, provider);
@@ -87,23 +87,18 @@ export default function LoginPage() {
             description: error.message,
             variant: 'destructive',
         });
-        setIsLoading(false); // Reset loading state on error
+        setIsLoading(false);
     }
-  }
-
-  if (isRedirecting) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <Card className="flex flex-col items-center justify-center space-y-4 p-8">
-            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Authenticating with Google...</p>
-        </Card>
-      </div>
-    );
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      {isRedirecting ? (
+        <Card className="flex flex-col items-center justify-center space-y-4 p-8">
+            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Authenticating with Google...</p>
+        </Card>
+      ) : (
        <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-4">
             <SaathiIcon className="h-16 w-16 text-primary" />
@@ -172,6 +167,7 @@ export default function LoginPage() {
         </Button>
       </Tabs>
       </div>
+      )}
     </div>
   );
 }
