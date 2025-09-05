@@ -1,3 +1,4 @@
+
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -82,7 +83,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
 
         <g
           className={cn(
-            "transition-opacity duration-1000 delay-1000",
+            "transition-opacity duration-1000 delay-700",
             stage >= 3 ? "opacity-100" : "opacity-0"
           )}
         >
@@ -107,7 +108,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
 
         <g
           className={cn(
-            "transition-opacity duration-1000 delay-[1500ms]",
+            "transition-opacity duration-1000 delay-1000",
             stage >= 4 ? "opacity-100" : "opacity-0"
           )}
         >
