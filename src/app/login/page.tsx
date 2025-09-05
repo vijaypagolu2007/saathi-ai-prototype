@@ -48,8 +48,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
+  // Redirect if user is already logged in
   useEffect(() => {
-    // If auth is done loading and we have a user, redirect to home
     if (!authLoading && user) {
       router.push("/");
     }
@@ -60,8 +60,9 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await authAction();
-      router.push("/"); // On success, redirect
+      // On success, the useEffect above will handle the redirect.
     } catch (err: any) {
+      console.error("🔥 Firebase Error:", err.code, err.message);
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (err.code) {
         switch (err.code) {
@@ -70,10 +71,11 @@ export default function LoginPage() {
             break;
           case "auth/user-not-found":
           case "auth/wrong-password":
-            errorMessage = "Invalid email or password.";
+          case "auth/invalid-credential":
+            errorMessage = "Invalid email or password. Please try again.";
             break;
           case "auth/email-already-in-use":
-            errorMessage = "An account with this email already exists.";
+            errorMessage = "An account with this email already exists. Please login.";
             break;
           case "auth/weak-password":
             errorMessage = "Password should be at least 6 characters long.";
