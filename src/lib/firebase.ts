@@ -13,21 +13,13 @@ const firebaseConfig = {
   appId: "1:1090333053745:web:102a70af9f5c2de7f45610"
 };
 
-// Initialize Firebase for SSR and SSG
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
-
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize Firebase for SSR and SSG, and export the initialized app
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export function getFirebaseAuth(): Auth {
-    return auth;
+    return getAuth(app);
 }
 
 export function getFirebaseDb(): Firestore {
-    return db;
+    return getFirestore(app);
 }
