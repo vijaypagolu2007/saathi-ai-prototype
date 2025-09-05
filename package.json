@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "run-p next:dev genkit:watch",
-    "next:dev": "next dev --turbopack -p 3000 --port 9002 --hostname 0.0.0.0",
+    "next:dev": "node --require dotenv/config ./node_modules/next/dist/bin/next dev --turbopack -p 3000 --port 9002 --hostname 0.0.0.0",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "genkit:dev": "genkit dev"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
