@@ -36,8 +36,7 @@ export default function LoginPage() {
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          // User is signed in.
-          // The useAuth hook will detect the user and redirect.
+          // User is signed in. The useAuth hook will detect and redirect.
         }
       } catch (error: any) {
         toast({
@@ -63,7 +62,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push('/');
+      // The useAuth hook will handle the redirect on user state change.
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -91,14 +90,19 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      {isRedirecting ? (
+  if (isRedirecting) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="flex flex-col items-center justify-center space-y-4 p-8">
             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Authenticating with Google...</p>
+            <p className="text-muted-foreground">Authenticating...</p>
         </Card>
-      ) : (
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
        <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-4">
             <SaathiIcon className="h-16 w-16 text-primary" />
@@ -167,7 +171,6 @@ export default function LoginPage() {
         </Button>
       </Tabs>
       </div>
-      )}
     </div>
   );
 }
