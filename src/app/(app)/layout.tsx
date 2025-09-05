@@ -18,9 +18,8 @@ import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut, LoaderCircle } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { Button } from "@/components/ui/button";
 import { signOut } from "firebase/auth";
 import { getAuth } from "@/lib/firebase";
 
@@ -83,35 +82,18 @@ function AppNavigation() {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // onAuthStateChanged in AuthProvider will set the user.
-    // We just need to wait for that to happen.
-    // If user is null after the initial check, redirect to login.
-    const checkAuth = () => {
-      if (user === null) {
-        // A short delay to prevent flashing the login page if auth is fast.
-        // A null user means not logged in.
-        const timer = setTimeout(() => {
-             if (user === null) { // re-check user state
-                router.push('/login');
-             } else {
-                setAuthChecked(true);
-             }
-        }, 100); // Small delay
-        return () => clearTimeout(timer);
-      } else {
-        setAuthChecked(true);
-      }
-    };
-
-    checkAuth();
-  }, [user, router]);
+    // If auth state is not loading and there is no user, redirect to login
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
   
-  if (!authChecked || !user) {
+  // While loading, or if there's no user (and we're about to redirect), show a loader
+  if (loading || !user) {
     return (
         <div className="flex h-screen w-full items-center justify-center">
             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
