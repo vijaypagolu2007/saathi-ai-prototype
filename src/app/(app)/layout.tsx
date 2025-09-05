@@ -73,7 +73,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:hidden">
-          <SidebarTrigger />
+          <SidebarTrigger>
+            <SaathiIcon className="text-primary" />
+          </SidebarTrigger>
           <div className="flex items-center gap-2">
             <SaathiIcon className="h-6 w-6 text-primary" />
             <h1 className="text-lg font-headline font-semibold">SaathiAI</h1>
