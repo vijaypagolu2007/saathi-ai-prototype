@@ -10,7 +10,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
 } from 'firebase/auth';
-import { getAuth } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,32 +37,35 @@ export default function LoginPage() {
   const [signupPassword, setSignupPassword] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(true); // Start as true to check for redirect
 
   const router = useRouter();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (user) {
+    // If auth state is not loading and there is a user, redirect to home
+    if (!loading && user) {
       router.push('/');
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
   useEffect(() => {
     let cancelled = false;
     const checkRedirect = async () => {
       try {
-        const auth = getAuth();
         const result = await getRedirectResult(auth);
-        // result will be non-null if a redirect sign-in just finished
+        // result is null if no redirect just happened
+        if (!result && !cancelled) {
+          setIsRedirecting(false);
+        }
+        // if result is not null, the user object will update and the other useEffect will redirect
       } catch (error: any) {
         toast({
           title: 'Google Sign-In Failed',
           description: error?.message ?? 'Unknown error',
           variant: 'destructive',
         });
-      } finally {
         if (!cancelled) setIsRedirecting(false);
       }
     };
@@ -88,8 +91,6 @@ export default function LoginPage() {
   const handleAuthAction = async (action: 'login' | 'signup') => {
     setIsLoading(true);
     try {
-      const auth = getAuth();
-
       if (action === 'signup') {
         if (!validate(signupEmail, signupPassword)) {
           setIsLoading(false);
@@ -103,7 +104,7 @@ export default function LoginPage() {
         }
         await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
       }
-      // useAuth will handle redirect when user state updates
+      // useAuth context will handle redirect when user state updates
     } catch (error: any) {
       toast({
         title: 'Authentication Failed',
@@ -118,11 +119,10 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setIsRedirecting(true);
-    const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
       await signInWithRedirect(auth, provider);
-      // the redirect will leave the page — getRedirectResult handles the return
+      // The page will redirect. getRedirectResult handles the return.
     } catch (error: any) {
       toast({
         title: 'Google Sign-In Failed',
@@ -134,7 +134,7 @@ export default function LoginPage() {
     }
   };
 
-  if (isRedirecting) {
+  if (loading || isRedirecting) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="flex flex-col items-center justify-center space-y-4 p-8">
@@ -144,13 +144,18 @@ export default function LoginPage() {
       </div>
     );
   }
+  
+  // Don't render the login form if we're authenticated and about to redirect
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-4">
-          <SaathiIcon className="h-16 w-16 text-primary" />
-          <h1 className="text-4xl font-headline">Welcome to SaathiAI</h1>
+            <SaathiIcon className="h-16 w-16 text-primary" />
+            <h1 className="text-4xl font-headline">Welcome to SaathiAI</h1>
           <p className="text-center text-muted-foreground">Your personal wellness companion. Sign in to continue your journey.</p>
         </div>
 

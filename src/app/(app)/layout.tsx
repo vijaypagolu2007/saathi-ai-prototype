@@ -21,7 +21,7 @@ import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut } from "luc
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { signOut } from "firebase/auth";
-import { getAuth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 
 const navItems = [
   { href: "/", label: "Chat", icon: MessageCircle },
@@ -41,7 +41,6 @@ function AppNavigation() {
   };
   
   const handleLogout = async () => {
-    const auth = getAuth();
     await signOut(auth);
     router.push('/login');
   };
