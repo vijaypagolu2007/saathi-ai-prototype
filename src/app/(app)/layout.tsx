@@ -22,7 +22,7 @@ import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { signOut } from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 
 const navItems = [
   { href: "/", label: "Chat", icon: MessageCircle },
@@ -42,7 +42,6 @@ function AppNavigation() {
   };
   
   const handleLogout = async () => {
-    const auth = getFirebaseAuth();
     await signOut(auth);
     router.push('/login');
   };
