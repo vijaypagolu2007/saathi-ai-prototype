@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -10,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
@@ -25,9 +27,37 @@ const navItems = [
   { href: "/tree", label: "My Tree", icon: Leaf },
 ];
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function AppNavigation() {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
 
+  const handleLinkClick = () => {
+    setOpenMobile(false);
+  };
+
+  return (
+    <SidebarMenu>
+      {navItems.map((item) => (
+        <SidebarMenuItem key={item.href}>
+          <SidebarMenuButton
+            asChild
+            isActive={
+              pathname === item.href || (pathname === "/" && item.href === "/")
+            }
+            tooltip={{ children: item.label, side: "right" }}
+          >
+            <Link href={item.href} onClick={handleLinkClick}>
+              <item.icon />
+              <span>{item.label}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar>
@@ -38,24 +68,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={
-                    pathname === item.href || (pathname === "/" && item.href === "/")
-                  }
-                  tooltip={{ children: item.label, side: "right" }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <AppNavigation />
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
