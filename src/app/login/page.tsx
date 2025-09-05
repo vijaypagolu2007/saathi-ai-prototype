@@ -30,7 +30,7 @@ export default function LoginPage() {
         if (result) {
           // User has successfully signed in via redirect.
           // The onAuthStateChanged listener in AuthProvider will handle the redirect to '/'.
-          // We don't need to explicitly router.push here.
+          router.push('/');
         }
       } catch (error: any) {
         toast({
@@ -88,8 +88,10 @@ export default function LoginPage() {
   if (isRedirecting) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Authenticating with Google...</p>
+        <div className="flex flex-col items-center justify-center space-y-4 rounded-lg border bg-card p-8 shadow-sm">
+            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Authenticating with Google...</p>
+        </div>
       </div>
     );
   }
