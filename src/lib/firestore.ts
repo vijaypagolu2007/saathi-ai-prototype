@@ -1,10 +1,11 @@
 
-import { db } from './firebase';
+import { getFirebaseDb } from './firebase';
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import type { JournalEntry, MoodEntry } from './types';
 
 // Add a new journal entry for a specific user
 export const addJournalEntry = async (userId: string, entryData: Omit<JournalEntry, 'id' | 'userId' | 'date' | 'createdAt' | 'updatedAt'>) => {
+  const db = getFirebaseDb();
   try {
     await addDoc(collection(db, 'users', userId, 'journal'), {
       ...entryData,
@@ -19,6 +20,7 @@ export const addJournalEntry = async (userId: string, entryData: Omit<JournalEnt
 
 // Get all journal entries for a specific user
 export const getJournalEntries = async (userId: string): Promise<JournalEntry[]> => {
+  const db = getFirebaseDb();
   try {
     const q = query(collection(db, 'users', userId, 'journal'), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
@@ -49,6 +51,7 @@ export const getJournalEntries = async (userId: string): Promise<JournalEntry[]>
 
 // Add a new mood entry for a specific user
 export const addMoodEntry = async (userId: string, moodData: Omit<MoodEntry, 'id' | 'userId' | 'date' | 'createdAt'>) => {
+    const db = getFirebaseDb();
     try {
         await addDoc(collection(db, 'users', userId, 'moods'), {
             ...moodData,
@@ -62,6 +65,7 @@ export const addMoodEntry = async (userId: string, moodData: Omit<MoodEntry, 'id
 
 // Get all mood entries for a specific user
 export const getMoodEntries = async (userId: string): Promise<MoodEntry[]> => {
+    const db = getFirebaseDb();
     try {
         const q = query(collection(db, 'users', userId, 'moods'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);

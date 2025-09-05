@@ -1,7 +1,8 @@
-import { db } from './firebase';
+import { getFirebaseDb } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const getUserDoc = async (userId: string) => {
+    const db = getFirebaseDb();
     const userDocRef = doc(db, 'users', userId);
     const userDocSnap = await getDoc(userDocRef);
     if (userDocSnap.exists()) {

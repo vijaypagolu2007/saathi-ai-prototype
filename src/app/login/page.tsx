@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,7 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   useEffect(() => {
+    const auth = getFirebaseAuth();
     const checkRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
@@ -49,6 +50,7 @@ export default function LoginPage() {
 
   const handleAuthAction = async (action: 'login' | 'signup') => {
     setIsLoading(true);
+    const auth = getFirebaseAuth();
     try {
       if (action === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -69,6 +71,7 @@ export default function LoginPage() {
   
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    const auth = getFirebaseAuth();
     const provider = new GoogleAuthProvider();
     try {
         await signInWithRedirect(auth, provider);
