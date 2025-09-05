@@ -18,20 +18,18 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(true); // Start true to check for redirect
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
     const checkRedirect = async () => {
-      setIsLoading(true);
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          // This means the user has just signed in via redirect.
-          router.push('/');
-        } else {
-          // No redirect result, so we can stop loading.
-          setIsLoading(false);
+          // User has successfully signed in via redirect.
+          // The onAuthStateChanged listener in AuthProvider will handle the redirect to '/'.
+          // We don't need to explicitly router.push here.
         }
       } catch (error: any) {
         toast({
@@ -39,7 +37,9 @@ export default function LoginPage() {
           description: error.message,
           variant: 'destructive',
         });
-        setIsLoading(false);
+      } finally {
+        // Finished checking for redirect, stop the redirecting loading state.
+        setIsRedirecting(false); 
       }
     };
 
@@ -71,7 +71,6 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        // We use signInWithRedirect which is more robust than signInWithPopup
         await signInWithRedirect(auth, provider);
     } catch (error: any) {
         toast({
@@ -81,6 +80,15 @@ export default function LoginPage() {
         });
         setIsLoading(false);
     }
+  }
+
+  if (isRedirecting) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Authenticating with Google...</p>
+      </div>
+    );
   }
 
   return (
