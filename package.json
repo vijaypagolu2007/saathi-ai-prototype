@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "run-p next:dev genkit:watch",
     "next:dev": "node --require dotenv/config ./node_modules/next/dist/bin/next dev --turbopack -p 3000 --port 9002 --hostname 0.0.0.0",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "genkit:watch": "genkit start --port 3100 -- tsx --watch src/ai/dev.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
