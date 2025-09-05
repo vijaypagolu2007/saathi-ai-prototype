@@ -27,6 +27,7 @@ import { subDays, format, parseISO, isSameDay } from "date-fns";
 import { useAuth } from "@/context/auth-context";
 import { addJournalEntry, getJournalEntries } from "@/lib/firestore";
 import { getGrowthPoints, setGrowthPoints } from "@/lib/user-data";
+import { Input } from "@/components/ui/input";
 
 const moods = [
     { name: "Happy", emoji: "😀", score: 2 },
@@ -53,6 +54,7 @@ export default function JournalPage() {
   const [isPromptLoading, setIsPromptLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [journalText, setJournalText] = useState("");
+  const [journalTitle, setJournalTitle] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -75,12 +77,12 @@ export default function JournalPage() {
       const result = await generateJournalPrompt({ mood: selectedMood });
       setPrompt(result.prompt);
     } catch (error) {
-      console.error("Failed to generate prompt:", error);
-      toast({
-        title: "Error",
-        description: "Could not get a prompt. Please try again.",
-        variant: "destructive",
-      });
+        console.error("Failed to generate prompt:", error);
+        toast({
+            title: "Error",
+            description: "Could not get a prompt. Please try again.",
+            variant: "destructive",
+        });
     } finally {
       setIsPromptLoading(false);
     }
@@ -117,8 +119,8 @@ export default function JournalPage() {
         return;
       }
 
-      const newEntry: Omit<JournalEntry, 'id' | 'userId' | 'date'> & { date: Date } = {
-        date: new Date(),
+      const newEntry: Omit<JournalEntry, 'id' | 'userId' | 'date' | 'createdAt' | 'updatedAt'> = {
+        title: journalTitle.trim() || `Journal Entry - ${new Date().toLocaleDateString()}`,
         mood: finalMood.name,
         moodScore: finalMood.score,
         prompt: prompt,
@@ -137,6 +139,7 @@ export default function JournalPage() {
       setSelectedMood(null);
       setPrompt("");
       setJournalText("");
+      setJournalTitle("");
        toast({
         title: "Entry Saved!",
         description: "Your journal entry has been saved and you've earned a growth point.",
@@ -225,6 +228,11 @@ export default function JournalPage() {
                 </div>
               )}
             
+              <Input 
+                placeholder="Title (optional)"
+                value={journalTitle}
+                onChange={(e) => setJournalTitle(e.target.value)}
+              />
               <Textarea
                 placeholder="Start writing here..."
                 value={journalText}
@@ -326,7 +334,7 @@ export default function JournalPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
                     <span className="text-2xl">{moods.find((m) => m.name === entry.mood)?.emoji}</span>
-                    {entry.mood}
+                    {entry.title}
                   </CardTitle>
                   <CardDescription>
                     {new Date(entry.date).toLocaleDateString("en-US", {
