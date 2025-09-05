@@ -1,8 +1,9 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,32 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const checkRedirect = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          // This means the user has just signed in via redirect.
+          router.push('/');
+        } else {
+          // No redirect result, so we can stop loading.
+          setIsLoading(false);
+        }
+      } catch (error: any) {
+        toast({
+          title: 'Google Sign-In Failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+      }
+    };
+
+    checkRedirect();
+  }, [router, toast]);
+
 
   const handleAuthAction = async (action: 'login' | 'signup') => {
     setIsLoading(true);
@@ -44,15 +71,14 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
-        router.push('/');
+        // We use signInWithRedirect which is more robust than signInWithPopup
+        await signInWithRedirect(auth, provider);
     } catch (error: any) {
         toast({
             title: 'Google Sign-In Failed',
             description: error.message,
             variant: 'destructive',
         });
-    } finally {
         setIsLoading(false);
     }
   }
