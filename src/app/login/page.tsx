@@ -199,7 +199,7 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
-                    <Input id="signup-password" type="password" required value={password} onChange={(e) => setPassword(e.targt.value)} />
+                    <Input id="signup-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -240,5 +240,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
