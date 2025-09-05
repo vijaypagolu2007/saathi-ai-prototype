@@ -4,38 +4,28 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyANTCeu3Xv_fMPbUUmaZCcrOif6puC9Tio",
+  authDomain: "saathiai-web.firebaseapp.com",
+  projectId: "saathiai-web",
+  storageBucket: "saathiai-web.appspot.com",
+  messagingSenderId: "1090333053745",
+  appId: "1:1090333053745:web:102a70af9f5c2de7f45610"
 };
-
-// Validate that all required Firebase config values are present
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId || firebaseConfig.apiKey.includes("your_api_key")) {
-    console.error("Firebase configuration is missing or incomplete. Please create a .env file in the root of your project and add your Firebase credentials. See README.md for more details.");
-}
 
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-// Initialize Firebase on demand
-if (firebaseConfig.apiKey && firebaseConfig.projectId) {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
+// Initialize Firebase
+if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
 } else {
-    // Provide dummy objects if config is not available to avoid app crashes
-    // This allows the app to build and run, but Firebase features will not work
-    // and will likely throw errors when used.
-    app = {} as FirebaseApp;
-    auth = {} as Auth;
-    db = {} as Firestore;
+    app = getApp();
 }
 
+auth = getAuth(app);
+db = getFirestore(app);
 
 export { auth, db };
