@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "run-p next:dev genkit:watch",
     "next:dev": "next dev -p 3000 --hostname 0.0.0.0",
     "genkit:watch": "genkit start --port 3100 -- tsx --watch src/ai/dev.ts",
     "build": "next build",
@@ -43,7 +43,6 @@
     "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^10.12.2",
-    "genkit": "^1.14.1",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "patch-package": "^8.0.0",
