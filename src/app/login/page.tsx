@@ -8,7 +8,6 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/auth-context";
@@ -45,22 +44,17 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(true); // Start with true for initial auth check
   const [activeTab, setActiveTab] = useState("login");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // If user object is available (either logged in or confirmed not logged in), stop redirecting check.
-    if (user !== undefined) {
-      setIsRedirecting(false);
-    }
-    // If user is logged in, redirect to home page.
-    if (user) {
+    // If auth is done loading and we have a user, redirect to home
+    if (!authLoading && user) {
       router.push("/");
     }
-  }, [user, router]);
-  
+  }, [user, authLoading, router]);
+
   const handleAuth = async (authAction: () => Promise<any>) => {
     setError(null);
     setIsLoading(true);
@@ -104,16 +98,16 @@ export default function LoginPage() {
     }
     handleAuth(() => createUserWithEmailAndPassword(auth, email, password));
   };
-  
+
   const handleEmailLogin = () => {
     handleAuth(() => signInWithEmailAndPassword(auth, email, password));
   };
-  
+
   const handleGoogleSignIn = () => {
     const provider = new GoogleAuthProvider();
     handleAuth(() => signInWithPopup(auth, provider));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab === 'login') {
@@ -124,7 +118,7 @@ export default function LoginPage() {
   }
 
   // Show a full-page loader during initial auth check or if user is already logged in and redirecting
-  if (isRedirecting || user) {
+  if (authLoading || user) {
      return (
         <div className="flex min-h-screen w-full items-center justify-center bg-background">
             <svg
@@ -156,7 +150,7 @@ export default function LoginPage() {
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
-          
+
           <form onSubmit={handleSubmit}>
             <TabsContent value="login">
               <Card>
@@ -183,7 +177,7 @@ export default function LoginPage() {
                 </CardFooter>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="signup">
               <Card>
                 <CardHeader>
@@ -214,7 +208,7 @@ export default function LoginPage() {
               </Card>
             </TabsContent>
           </form>
-          
+
           <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t"></span>
@@ -223,7 +217,7 @@ export default function LoginPage() {
                   <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
           </div>
-          
+
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
             <GoogleIcon className="mr-2" />
             Google
