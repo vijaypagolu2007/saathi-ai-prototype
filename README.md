@@ -40,8 +40,8 @@ Follow these instructions to get a copy of the project up and running on your lo
     d. Copy the Firebase configuration object provided.
 
 4.  **Configure Environment Variables:**
-    a. Rename the `.env.example` file to `.env`.
-    b. Paste your Firebase configuration values into the `.env` file:
+    a. Create a file named `.env` in the root of your project.
+    b. Paste your Firebase configuration values into the `.env` file. **Important:** The variable names must start with `NEXT_PUBLIC_`.
     ```
     NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
