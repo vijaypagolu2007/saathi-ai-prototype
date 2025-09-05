@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
+  const auth = getAuth();
 
   useEffect(() => {
     if (user) {
@@ -35,7 +36,10 @@ export default function LoginPage() {
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          router.push('/');
+          // The user has successfully signed in.
+          // The user state will be updated by the onAuthStateChanged listener,
+          // which will trigger the redirect in the other useEffect.
+          // We can set isRedirecting to false to show the main page briefly or keep it true.
         }
       } catch (error: any) {
         toast({
@@ -49,7 +53,7 @@ export default function LoginPage() {
     };
 
     checkRedirect();
-  }, [router, toast]);
+  }, [auth, router, toast]);
 
 
   const handleAuthAction = async (action: 'login' | 'signup') => {
@@ -73,7 +77,7 @@ export default function LoginPage() {
   };
   
   const handleGoogleSignIn = async () => {
-    setIsRedirecting(true);
+    setIsLoading(true); // Show loading state on the button
     const provider = new GoogleAuthProvider();
     try {
         await signInWithRedirect(auth, provider);
@@ -83,7 +87,7 @@ export default function LoginPage() {
             description: error.message,
             variant: 'destructive',
         });
-        setIsRedirecting(false);
+        setIsLoading(false); // Reset loading state on error
     }
   }
 
@@ -160,8 +164,8 @@ export default function LoginPage() {
             <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
             <div className="flex-grow border-t border-muted"></div>
         </div>
-         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isRedirecting}>
-            {isLoading || isRedirecting ? <LoaderCircle className="mr-2 animate-spin" /> : 
+         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+            {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : 
                 <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 21.2 173.4 57.2l-67.4 67.4C309.8 99.4 280.6 84 248 84c-80.9 0-146.5 65.5-146.5 146.5S167.1 377 248 377c88.4 0 112.5-62.7 115.9-93.1H248v-61.9h238.5c1.3 8.3 2.5 16.8 2.5 25.8z"></path></svg>
             }
             Google
