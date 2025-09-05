@@ -85,10 +85,10 @@ export default function LoginPage() {
   if (isRedirecting) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <div className="flex flex-col items-center justify-center space-y-4 rounded-lg border bg-card p-8 shadow-sm">
+        <Card className="flex flex-col items-center justify-center space-y-4 p-8">
             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
             <p className="text-muted-foreground">Authenticating with Google...</p>
-        </div>
+        </Card>
       </div>
     );
   }
