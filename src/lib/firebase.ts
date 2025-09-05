@@ -1,8 +1,8 @@
 
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,12 +16,26 @@ const firebaseConfig = {
 
 // Validate that all required Firebase config values are present
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId || firebaseConfig.apiKey.includes("your_api_key")) {
-    throw new Error("Missing or incomplete Firebase configuration. Please create a .env file in the root of your project and add your Firebase credentials. See README.md for more details.");
+    console.error("Firebase configuration is missing or incomplete. Please create a .env file in the root of your project and add your Firebase credentials. See README.md for more details.");
 }
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+
+// Initialize Firebase on demand
+if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
+} else {
+    // Provide dummy objects if config is not available to avoid app crashes
+    // This allows the app to build and run, but Firebase features will not work
+    // and will likely throw errors when used.
+    app = {} as FirebaseApp;
+    auth = {} as Auth;
+    db = {} as Firestore;
+}
+
 
 export { auth, db };
