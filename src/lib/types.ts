@@ -1,3 +1,4 @@
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
@@ -9,8 +10,6 @@ export type JournalEntry = {
   userId: string;
   date: string; // This will be the ISO string of the createdAt date
   title: string;
-  mood: string;
-  moodScore: number;
   prompt: string;
   content: string;
   analysis?: {
@@ -20,4 +19,13 @@ export type JournalEntry = {
   };
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
+};
+
+export type MoodEntry = {
+  id: string;
+  userId: string;
+  date: string; // ISO string
+  mood: string;
+  moodScore: number;
+  createdAt: string; // ISO string
 };

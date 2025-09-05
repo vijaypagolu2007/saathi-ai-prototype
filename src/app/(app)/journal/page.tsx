@@ -25,7 +25,8 @@ import {
 } from "@/components/ui/chart";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
 import { useAuth } from "@/context/auth-context";
-import { addJournalEntry, getJournalEntries } from "@/lib/firestore";
+import { addJournalEntry, getJournalEntries, addMoodEntry, getMoodEntries } from "@/lib/firestore";
+import type { MoodEntry } from "@/lib/types";
 import { getGrowthPoints, setGrowthPoints } from "@/lib/user-data";
 import { Input } from "@/components/ui/input";
 
@@ -47,8 +48,9 @@ const chartConfig = {
 
 export default function JournalPage() {
   const { user } = useAuth();
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [isEntriesLoading, setIsEntriesLoading] = useState(true);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [isPromptLoading, setIsPromptLoading] = useState(false);
@@ -60,10 +62,12 @@ export default function JournalPage() {
   useEffect(() => {
     const fetchEntries = async () => {
       if (user) {
-        setIsEntriesLoading(true);
-        const userEntries = await getJournalEntries(user.uid);
-        setEntries(userEntries);
-        setIsEntriesLoading(false);
+        setIsLoading(true);
+        const userJournalEntries = await getJournalEntries(user.uid);
+        const userMoodEntries = await getMoodEntries(user.uid);
+        setJournalEntries(userJournalEntries);
+        setMoodEntries(userMoodEntries);
+        setIsLoading(false);
       }
     };
     fetchEntries();
@@ -96,6 +100,7 @@ export default function JournalPage() {
     let moodAnalysis = null;
 
     try {
+      // Analyze mood from text if no mood is selected
       if (!entryMoodName && journalText.trim()) {
         const analysisResult = await analyzeMood({ text: journalText });
         const foundMood = moods.find(m => m.name.toLowerCase() === analysisResult.mood.toLowerCase());
@@ -106,50 +111,50 @@ export default function JournalPage() {
             description: "We've analyzed your entry to understand how you're feeling.",
         });
       }
-
+      
       const finalMood = moods.find(m => m.name === entryMoodName) ?? moods.find(m => m.name === 'Neutral')!;
       
-      if (!finalMood) {
-        toast({
-          title: "Please select a mood",
-          description: "Select a mood before saving your entry.",
-          variant: "destructive",
-        });
-        setIsSaving(false);
-        return;
-      }
-
-      const newEntry: Omit<JournalEntry, 'id' | 'userId' | 'date' | 'createdAt' | 'updatedAt'> = {
-        title: journalTitle.trim() || `Journal Entry - ${new Date().toLocaleDateString()}`,
+      // Save Mood Entry
+      await addMoodEntry(user.uid, {
         mood: finalMood.name,
         moodScore: finalMood.score,
+      });
+
+      // Save Journal Entry
+      const newJournalEntry: Omit<JournalEntry, 'id' | 'userId' | 'date' | 'createdAt' | 'updatedAt'> = {
+        title: journalTitle.trim() || `Journal Entry - ${new Date().toLocaleDateString()}`,
         prompt: prompt,
         content: journalText,
         analysis: moodAnalysis ?? undefined,
       };
 
-      await addJournalEntry(user.uid, newEntry);
+      await addJournalEntry(user.uid, newJournalEntry);
       
-      const updatedEntries = await getJournalEntries(user.uid);
-      setEntries(updatedEntries);
+      // Refresh data
+      const updatedJournalEntries = await getJournalEntries(user.uid);
+      const updatedMoodEntries = await getMoodEntries(user.uid);
+      setJournalEntries(updatedJournalEntries);
+      setMoodEntries(updatedMoodEntries);
 
+      // Give growth point
       const currentPoints = await getGrowthPoints(user.uid);
       await setGrowthPoints(user.uid, currentPoints + 1);
 
+      // Reset form
       setSelectedMood(null);
       setPrompt("");
       setJournalText("");
       setJournalTitle("");
        toast({
         title: "Entry Saved!",
-        description: "Your journal entry has been saved and you've earned a growth point.",
+        description: "Your journal and mood have been saved. You've earned a growth point.",
       });
 
     } catch (error) {
       console.error("Failed to save entry:", error);
       toast({
         title: "Error saving entry",
-        description: "There was a problem saving your journal entry. Please try again.",
+        description: "There was a problem saving your entry. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -163,7 +168,7 @@ export default function JournalPage() {
     ).reverse();
 
     return last7Days.map((day) => {
-      const entriesForDay = entries.filter((entry) =>
+      const entriesForDay = moodEntries.filter((entry) =>
         isSameDay(parseISO(entry.date), day)
       );
 
@@ -182,9 +187,9 @@ export default function JournalPage() {
         averageScore: averageScore,
       };
     });
-  }, [entries]);
+  }, [moodEntries]);
 
-  const hasData = useMemo(() => entries.length > 0, [entries]);
+  const hasData = useMemo(() => moodEntries.length > 0, [moodEntries]);
 
   return (
     <div className="space-y-8">
@@ -261,7 +266,7 @@ export default function JournalPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isEntriesLoading ? <LoaderCircle className="mx-auto animate-spin" /> : hasData ? (
+          {isLoading ? <LoaderCircle className="mx-auto animate-spin" /> : hasData ? (
              <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
               <LineChart
                 accessibilityLayer
@@ -316,7 +321,7 @@ export default function JournalPage() {
           ) : (
             <div className="flex h-[300px] w-full items-center justify-center rounded-lg border-2 border-dashed">
                 <p className="text-center text-muted-foreground">
-                    No journal entries yet.
+                    No mood entries yet.
                     <br />
                     Start journaling to see your mood trends.
                 </p>
@@ -327,13 +332,12 @@ export default function JournalPage() {
       
       <div className="space-y-4">
         <h2 className="text-2xl font-headline">Past Entries</h2>
-        {isEntriesLoading ? <LoaderCircle className="mx-auto animate-spin" /> : entries.length > 0 ? (
+        {isLoading ? <LoaderCircle className="mx-auto animate-spin" /> : journalEntries.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {entries.map((entry) => (
+            {journalEntries.map((entry) => (
               <Card key={entry.id} className="flex flex-col">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <span className="text-2xl">{moods.find((m) => m.name === entry.mood)?.emoji}</span>
+                  <CardTitle className="text-xl">
                     {entry.title}
                   </CardTitle>
                   <CardDescription>

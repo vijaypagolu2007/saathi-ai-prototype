@@ -15,11 +15,11 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { JournalEntry } from "@/lib/types";
+import type { MoodEntry } from "@/lib/types";
 import { useMemo, useState, useEffect } from "react";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
 import { useAuth } from "@/context/auth-context";
-import { getJournalEntries } from "@/lib/firestore";
+import { getMoodEntries } from "@/lib/firestore";
 import { LoaderCircle } from "lucide-react";
 
 const chartConfig = {
@@ -31,14 +31,14 @@ const chartConfig = {
 
 export default function MoodsPage() {
   const { user } = useAuth();
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [entries, setEntries] = useState<MoodEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchEntries = async () => {
       if (user) {
         setIsLoading(true);
-        const userEntries = await getJournalEntries(user.uid);
+        const userEntries = await getMoodEntries(user.uid);
         setEntries(userEntries);
         setIsLoading(false);
       }
@@ -149,9 +149,9 @@ export default function MoodsPage() {
           ) : (
             <div className="flex h-[300px] w-full items-center justify-center rounded-lg border-2 border-dashed">
                 <p className="text-center text-muted-foreground">
-                    No journal entries found for the last 7 days.
+                    No mood entries found for the last 7 days.
                     <br />
-                    Start journaling to see your mood trends.
+                    Select a mood on the Journal page to track your trends.
                 </p>
             </div>
           )}
