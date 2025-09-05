@@ -70,7 +70,7 @@ export default function LoginPage() {
   };
   
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsLoading(true); // This loading state will persist on the page until redirect
     const auth = getFirebaseAuth();
     const provider = new GoogleAuthProvider();
     try {
