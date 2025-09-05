@@ -81,13 +81,16 @@ export default function LoginPage() {
             errorMessage = "Password should be at least 6 characters long.";
             break;
           case "auth/popup-closed-by-user":
-            errorMessage = "Google sign-in was cancelled.";
+            // Don't show an error message if the user closes the popup
+            errorMessage = "";
             break;
           default:
             errorMessage = "Authentication failed. Please try again.";
         }
       }
-      setError(errorMessage);
+      if (errorMessage) {
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -196,7 +199,7 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
-                    <Input id="signup-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <Input id="signup-password" type="password" required value={password} onChange={(e) => setPassword(e.targt.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -222,7 +225,7 @@ export default function LoginPage() {
           </div>
 
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-            <GoogleIcon className="mr-2" />
+             {isLoading ? <LoaderCircle className="animate-spin" /> : <GoogleIcon className="mr-2" />}
             Google
           </Button>
 
@@ -237,3 +240,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
