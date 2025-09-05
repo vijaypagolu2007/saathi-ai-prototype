@@ -1,3 +1,4 @@
+
 # SaathiAI Web - Your Personal Wellness Companion
 
 This is a Next.js application that provides a safe and supportive space for users to track their mental well-being through journaling, mood tracking, and interaction with an empathetic AI assistant. The project is integrated with Firebase for authentication and data storage.
