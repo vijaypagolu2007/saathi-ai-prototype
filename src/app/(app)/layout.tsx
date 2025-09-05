@@ -17,7 +17,7 @@ import {
 import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut, LoaderCircle } from "lucide-react";
+import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut } from "lucide-react";
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { signOut } from "firebase/auth";
@@ -92,13 +92,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
   
-  // While loading, or if there's no user (and we're about to redirect), show a loader
-  if (loading || !user) {
+  // While the initial auth check is loading, show the custom loader
+  if (loading) {
     return (
-        <div className="flex h-screen w-full items-center justify-center">
-            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-20 w-20 animate-beat text-primary/80"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
         </div>
     )
+  }
+
+  // If there's no user after loading, the useEffect will handle the redirect.
+  // We can return null or a minimal layout to prevent flashing the main content.
+  if (!user) {
+    return null;
   }
   
   return (
