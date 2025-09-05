@@ -13,6 +13,7 @@ const firebaseConfig = {
   appId: "1:1090333053745:web:102a70af9f5c2de7f45610"
 };
 
+// Initialize Firebase for SSR and SSG
 let app: FirebaseApp;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
