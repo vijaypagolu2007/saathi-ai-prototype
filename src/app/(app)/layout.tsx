@@ -17,7 +17,7 @@ import {
 import { SaathiIcon } from "@/components/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut } from "lucide-react";
+import { MessageCircle, BookHeart, Sparkles, Leaf, BarChart3, LogOut, LoaderCircle } from "lucide-react";
 import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
   
   if (loading || !user) {
-    return null; // or a loading spinner
+    return (
+        <div className="flex h-screen w-full items-center justify-center">
+            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    )
   }
   
   return (

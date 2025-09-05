@@ -1,9 +1,9 @@
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { getFirebaseAuth } from '@/lib/firebase';
-import { LoaderCircle } from 'lucide-react';
 
 interface AuthContextType {
   user: User | null;
@@ -25,14 +25,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
-  
-  if (loading) {
-    return (
-        <div className="flex h-screen w-full items-center justify-center">
-            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-        </div>
-    )
-  }
 
   return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
 };
