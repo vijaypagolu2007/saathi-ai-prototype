@@ -13,22 +13,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { SaathiIcon } from '@/components/icons';
 import { LoaderCircle } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(true); // Start true to check for redirect
+  const [isRedirecting, setIsRedirecting] = useState(true); 
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const checkRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          // User has successfully signed in via redirect.
-          // The onAuthStateChanged listener in AuthProvider will handle the redirect to '/'.
           router.push('/');
         }
       } catch (error: any) {
@@ -38,7 +44,6 @@ export default function LoginPage() {
           variant: 'destructive',
         });
       } finally {
-        // Finished checking for redirect, stop the redirecting loading state.
         setIsRedirecting(false); 
       }
     };
@@ -68,7 +73,7 @@ export default function LoginPage() {
   };
   
   const handleGoogleSignIn = async () => {
-    setIsLoading(true); // This loading state will persist on the page until redirect
+    setIsRedirecting(true);
     const provider = new GoogleAuthProvider();
     try {
         await signInWithRedirect(auth, provider);
@@ -78,7 +83,7 @@ export default function LoginPage() {
             description: error.message,
             variant: 'destructive',
         });
-        setIsLoading(false);
+        setIsRedirecting(false);
     }
   }
 
@@ -133,7 +138,7 @@ export default function LoginPage() {
             <CardHeader>
               <CardTitle>Sign Up</CardTitle>
               <CardDescription>Create an account to start your wellness journey.</CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="signup-email">Email</Label>
@@ -155,8 +160,8 @@ export default function LoginPage() {
             <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
             <div className="flex-grow border-t border-muted"></div>
         </div>
-         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-            {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : 
+         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isRedirecting}>
+            {isLoading || isRedirecting ? <LoaderCircle className="mr-2 animate-spin" /> : 
                 <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 21.2 173.4 57.2l-67.4 67.4C309.8 99.4 280.6 84 248 84c-80.9 0-146.5 65.5-146.5 146.5S167.1 377 248 377c88.4 0 112.5-62.7 115.9-93.1H248v-61.9h238.5c1.3 8.3 2.5 16.8 2.5 25.8z"></path></svg>
             }
             Google
