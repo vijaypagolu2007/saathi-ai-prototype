@@ -37,6 +37,7 @@ export default function LoginPage() {
         const result = await getRedirectResult(auth);
         if (result) {
           // User is signed in. The useAuth hook will detect this and redirect.
+          // The page will show the loading spinner until the user state is confirmed.
         }
       } catch (error: any) {
         toast({
@@ -76,6 +77,7 @@ export default function LoginPage() {
   
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setIsRedirecting(true); // Show loader immediately on click
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
@@ -87,6 +89,7 @@ export default function LoginPage() {
             variant: 'destructive',
         });
         setIsLoading(false);
+        setIsRedirecting(false);
     }
   }
 
