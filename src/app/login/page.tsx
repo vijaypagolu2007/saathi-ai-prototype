@@ -32,8 +32,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     const checkRedirect = async () => {
-      const auth = getAuth();
       try {
+        const auth = getAuth();
         const result = await getRedirectResult(auth);
         if (result) {
           // User is signed in. The useAuth hook will detect and redirect.
@@ -50,7 +50,7 @@ export default function LoginPage() {
     };
 
     checkRedirect();
-  }, [router, toast]);
+  }, [toast]);
 
 
   const handleAuthAction = async (action: 'login' | 'signup') => {
@@ -95,7 +95,7 @@ export default function LoginPage() {
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <Card className="flex flex-col items-center justify-center space-y-4 p-8">
             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Authenticating...</p>
+            <p className="text-muted-foreground">Authenticating with Google...</p>
         </Card>
       </div>
     );
