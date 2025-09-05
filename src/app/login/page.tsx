@@ -110,6 +110,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     if (activeTab === 'login') {
       handleEmailLogin();
     } else {
@@ -145,7 +146,7 @@ export default function LoginPage() {
             <h1 className="text-4xl font-headline text-center">Welcome to SaathiAI</h1>
             <p className="text-center text-muted-foreground">Your personal wellness companion.</p>
         </div>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => { setActiveTab(value); setError(null); }} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -234,3 +235,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
