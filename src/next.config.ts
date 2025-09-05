@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
   experimental: {
     allowedOrigins: [
       'localhost:9003',
-      'studio.firebase.google.com'
+      'studio.firebase.google.com',
+      'console.firebase.google.com',
     ],
   },
   typescript: {
