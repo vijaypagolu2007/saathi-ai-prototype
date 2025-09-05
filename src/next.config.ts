@@ -2,13 +2,6 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    allowedOrigins: [
-      'localhost:9003',
-      'studio.firebase.google.com',
-      'console.firebase.google.com',
-    ],
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
