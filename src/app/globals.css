@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    --background: 25 50% 96%; /* #FAF0E6 */
-    --foreground: 20 15% 25%;
-    --card: 25 50% 97%;
+    --background: 25 50% 96%; /* A very light, warm off-white, like a soft peach */
+    --foreground: 20 15% 25%; /* A dark, soft brown for text */
+    --card: 25 50% 97%; /* Slightly lighter than the background for cards */
     --card-foreground: 20 15% 25%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 15% 25%;
-    --primary: 30 100% 65%; /* #FFB347 */
-    --primary-foreground: 20 15% 10%;
-    --secondary: 40 40% 92%;
+    --primary: 30 100% 65%; /* A gentle, welcoming orange */
+    --primary-foreground: 20 15% 10%; /* Dark text for primary buttons */
+    --secondary: 40 40% 92%; /* A soft, warm gray for secondary elements */
     --secondary-foreground: 20 15% 15%;
-    --muted: 40 40% 90%;
+    --muted: 40 40% 90%; /* A lighter warm gray for muted text/backgrounds */
     --muted-foreground: 20 15% 45%;
-    --accent: 45 100% 70%; /* #FFDA63 */
+    --accent: 45 100% 70%; /* A warm, sunny yellow for accents */
     --accent-foreground: 20 15% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
