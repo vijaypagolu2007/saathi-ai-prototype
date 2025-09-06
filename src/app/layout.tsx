@@ -17,11 +17,28 @@ const fontBody = Alegreya({
 });
 
 export const metadata: Metadata = {
-  title: "SaathiAI Web",
-  description: "Your anonymous mental wellness companion.",
-  robots: {
-    index: false,
-    follow: false,
+  title: "SaathiAI – Chat, Journal, Track Moods, Grow",
+  description: "SaathiAI helps you journal your feelings, chat safely, track your moods, and grow your personal wellness tree.",
+  keywords: ["SaathiAI", "mood tracker", "AI chat", "journal", "mental wellness", "hackathon project"],
+  openGraph: {
+    title: "SaathiAI – My AI Wellness Companion",
+    description: "Journal, monitor moods, chat with AI, and explore resources to grow with SaathiAI.",
+    url: "https://saathiai-web.web.app",
+    images: [
+      {
+        url: "https://saathiai-web.web.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SaathiAI dashboard showing a resilience tree and mood chart.",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SaathiAI – Wellness Journal + Mood Tracker",
+    description: "SaathiAI empowers you to log moods, chat, and discover resources to grow.",
+    images: ["https://saathiai-web.web.app/og-image.png"],
   },
 };
 
