@@ -34,6 +34,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
           fill="transparent"
         />
 
+        {/* Stage 1: Sapling */}
         <g
           className={cn(
             "transition-opacity duration-1000",
@@ -56,6 +57,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
           />
         </g>
 
+        {/* Stage 2: Growing Tree */}
         <g
           className={cn(
             "transition-opacity duration-1000 delay-500",
@@ -81,6 +83,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
           <circle cx="95" cy="120" r="12" fill="hsl(var(--accent))" />
         </g>
 
+        {/* Stage 3: Strong Tree */}
         <g
           className={cn(
             "transition-opacity duration-1000 delay-700",
@@ -106,6 +109,7 @@ export const ResilienceTree: React.FC<ResilienceTreeProps> = ({
           <circle cx="100" cy="60" r="15" fill="hsl(var(--accent))" />
         </g>
 
+        {/* Stage 4: Flourishing Tree */}
         <g
           className={cn(
             "transition-opacity duration-1000 delay-1000",

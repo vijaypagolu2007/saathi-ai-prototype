@@ -1,3 +1,4 @@
+
 import { db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -7,6 +8,8 @@ const getUserDoc = async (userId: string) => {
     if (userDocSnap.exists()) {
         return { ref: userDocRef, data: userDocSnap.data() };
     }
+    // If the document doesn't exist, we can still return the reference
+    // to create it later.
     return { ref: userDocRef, data: null };
 }
 
@@ -17,6 +20,7 @@ export const getGrowthPoints = async (userId: string): Promise<number> => {
 
 export const setGrowthPoints = async (userId: string, points: number): Promise<void> => {
     const { ref } = await getUserDoc(userId);
+    // Use merge: true to create the document if it doesn't exist, or update it if it does.
     await setDoc(ref, { growthPoints: points }, { merge: true });
 };
 

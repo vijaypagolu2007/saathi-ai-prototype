@@ -47,11 +47,11 @@ export default function MoodsPage() {
   }, [user]);
 
   const chartData = useMemo(() => {
-    const last7Days = Array.from({ length: 7 }, (_, i) =>
+    const last30Days = Array.from({ length: 30 }, (_, i) =>
       subDays(new Date(), i)
     ).reverse();
 
-    return last7Days.map((day) => {
+    return last30Days.map((day) => {
       const entriesForDay = entries.filter((entry) =>
         isSameDay(parseISO(entry.date), day)
       );
@@ -79,12 +79,12 @@ export default function MoodsPage() {
     <div className="space-y-8">
       <h1 className="text-3xl font-headline">My Moods</h1>
       <p className="text-lg text-muted-foreground">
-        This chart shows your average mood score over the last week. Tracking your mood can help you notice patterns and reflect on your emotional well-being.
+        This chart shows your average mood score over the last 30 days. Tracking your mood can help you notice patterns and reflect on your emotional well-being.
       </p>
 
       <Card>
         <CardHeader>
-          <CardTitle>7-Day Mood Trend</CardTitle>
+          <CardTitle>30-Day Mood Trend</CardTitle>
           <CardDescription>
             A higher score indicates more positive moods, while a lower score reflects more challenging days. A score of 0 is neutral.
           </CardDescription>
@@ -110,6 +110,10 @@ export default function MoodsPage() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
+                  tickFormatter={(value, index) => {
+                    // Show tick every 5 days to prevent clutter
+                    return index % 5 === 0 ? value : "";
+                  }}
                 />
                 <YAxis
                   tickLine={false}
@@ -136,9 +140,7 @@ export default function MoodsPage() {
                   type="monotone"
                   stroke="var(--color-averageScore)"
                   strokeWidth={2}
-                  dot={{
-                    fill: "var(--color-averageScore)",
-                  }}
+                  dot={false}
                   activeDot={{
                     r: 6,
                   }}
@@ -149,7 +151,7 @@ export default function MoodsPage() {
           ) : (
             <div className="flex h-[300px] w-full items-center justify-center rounded-lg border-2 border-dashed">
                 <p className="text-center text-muted-foreground">
-                    No mood entries found for the last 7 days.
+                    No mood entries found for the last 30 days.
                     <br />
                     Select a mood on the Journal page to track your trends.
                 </p>
