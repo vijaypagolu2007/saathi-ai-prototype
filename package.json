@@ -1,6 +1,6 @@
 {
-  "name": "nextn",
-  "version": "0.1.0",
+  "name": "saathi-ai-prototype",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,7 +10,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "genkit:dev": "genkit dev"
+    "genkit:dev": "genkit dev",
+    "deploy": "npm run build && firebase deploy",
+    "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
