@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://saathiai-web.web.app/sitemap.xml
+Sitemap: https://YOUR_DOMAIN.com/sitemap.xml
