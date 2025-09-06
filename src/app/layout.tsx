@@ -49,6 +49,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "SaathiAI",
+              url: "https://saathiai-web.web.app",
+              applicationCategory: "Lifestyle",
+              operatingSystem: "Web",
+              description:
+                "SaathiAI helps you chat, journal, and track moods while growing your personal wellness tree.",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+              },
+            }),
+          }}
+        />
+      </head>
       <body
         className={cn(
           "font-body antialiased",
