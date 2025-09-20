@@ -33,7 +33,7 @@ const navItems = [
 
 function AppNavigation() {
   const pathname = usePathname();
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, state } = useSidebar();
   const router = useRouter();
 
   const handleLinkClick = () => {
@@ -60,7 +60,7 @@ function AppNavigation() {
           >
             <Link href={item.href} onClick={handleLinkClick}>
               <item.icon />
-              <span>{item.label}</span>
+              <span className={state === 'collapsed' ? 'hidden' : 'inline'}>{item.label}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -71,7 +71,7 @@ function AppNavigation() {
             <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout} tooltip={{ children: "Logout", side: "right" }}>
                     <LogOut />
-                    <span>Logout</span>
+                    <span className={state === 'collapsed' ? 'hidden' : 'inline'}>Logout</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
