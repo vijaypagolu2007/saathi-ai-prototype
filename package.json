@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "genkit start --port 3100 & next dev",
+    "dev": "genkit start & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -39,7 +39,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^10.12.2",
     "lucide-react": "^0.475.0",
