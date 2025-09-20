@@ -15,8 +15,13 @@ export const getGrowthPoints = async (userId: string): Promise<number> => {
         }
     } catch (error) {
         console.error("Error fetching growth points:", error);
+        // If offline and no cache, return a default value to prevent crash
+        if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Returning default growth points.');
+            return 0;
+        }
     }
-    return 0; // Return default value if offline or doc doesn't exist
+    return 0; // Return default value if doc doesn't exist or on other errors
 };
 
 export const setGrowthPoints = async (userId: string, points: number): Promise<void> => {
@@ -34,6 +39,11 @@ export const getLastCheckIn = async (userId: string): Promise<string> => {
         }
     } catch (error) {
         console.error("Error fetching last check-in:", error);
+         // If offline and no cache, return a default value to prevent crash
+        if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Returning default last check-in.');
+            return "";
+        }
     }
     return ""; // Return default value
 };
