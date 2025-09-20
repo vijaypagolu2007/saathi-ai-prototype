@@ -27,18 +27,15 @@ export const getGrowthPoints = async (userId: string): Promise<number> => {
 export const setGrowthPoints = async (userId: string, points: number): Promise<void> => {
     const userDocRef = getUserDocRef(userId);
     try {
-        // Use updateDoc to modify an existing document.
-        // This assumes the document is created on user sign-up.
-        await updateDoc(userDocRef, { growthPoints: points });
+        // Use setDoc with merge to create or update the document.
+        await setDoc(userDocRef, { growthPoints: points }, { merge: true });
     } catch (error) {
-        // If the document doesn't exist, it might be a new user or an offline scenario.
-        // setDoc with merge will create it if it's missing.
-        if ((error as any).code === 'not-found' || (error as any).code === 'unavailable') {
-             await setDoc(userDocRef, { growthPoints: points }, { merge: true });
-        } else {
-            console.error("Error setting growth points:", error);
+        console.error("Error setting growth points:", error);
+        // If the error is not due to being offline, re-throw it.
+        if ((error as any).code !== 'unavailable') {
             throw error;
         }
+        console.warn('Firestore is unavailable. Growth points could not be saved.');
     }
 };
 
@@ -63,15 +60,14 @@ export const getLastCheckIn = async (userId: string): Promise<string> => {
 export const setLastCheckIn = async (userId: string, date: string): Promise<void> => {
     const userDocRef = getUserDocRef(userId);
     try {
-        // Use updateDoc for existing documents.
-        await updateDoc(userDocRef, { lastCheckIn: date });
+        // Use setDoc with merge to create or update the document.
+        await setDoc(userDocRef, { lastCheckIn: date }, { merge: true });
     } catch (error) {
-        // Fallback to set with merge for new users or offline cases.
-        if ((error as any).code === 'not-found' || (error as any).code === 'unavailable') {
-            await setDoc(userDocRef, { lastCheckIn: date }, { merge: true });
-        } else {
-             console.error("Error setting last check-in:", error);
-             throw error;
-        }
+         console.error("Error setting last check-in:", error);
+         // If the error is not due to being offline, re-throw it.
+         if ((error as any).code !== 'unavailable') {
+            throw error;
+         }
+         console.warn('Firestore is unavailable. Last check-in could not be saved.');
     }
 };
