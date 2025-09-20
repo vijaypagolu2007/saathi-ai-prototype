@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const getUserDocRef = (userId: string) => {
     return doc(db, 'users', userId);
@@ -26,8 +26,20 @@ export const getGrowthPoints = async (userId: string): Promise<number> => {
 
 export const setGrowthPoints = async (userId: string, points: number): Promise<void> => {
     const userDocRef = getUserDocRef(userId);
-    // Use merge: true to create the document if it doesn't exist, or update it if it does.
-    await setDoc(userDocRef, { growthPoints: points }, { merge: true });
+    try {
+        // Use updateDoc to modify an existing document.
+        // This assumes the document is created on user sign-up.
+        await updateDoc(userDocRef, { growthPoints: points });
+    } catch (error) {
+        // If the document doesn't exist, it might be a new user or an offline scenario.
+        // setDoc with merge will create it if it's missing.
+        if ((error as any).code === 'not-found' || (error as any).code === 'unavailable') {
+             await setDoc(userDocRef, { growthPoints: points }, { merge: true });
+        } else {
+            console.error("Error setting growth points:", error);
+            throw error;
+        }
+    }
 };
 
 export const getLastCheckIn = async (userId: string): Promise<string> => {
@@ -50,5 +62,16 @@ export const getLastCheckIn = async (userId: string): Promise<string> => {
 
 export const setLastCheckIn = async (userId: string, date: string): Promise<void> => {
     const userDocRef = getUserDocRef(userId);
-    await setDoc(userDocRef, { lastCheckIn: date }, { merge: true });
+    try {
+        // Use updateDoc for existing documents.
+        await updateDoc(userDocRef, { lastCheckIn: date });
+    } catch (error) {
+        // Fallback to set with merge for new users or offline cases.
+        if ((error as any).code === 'not-found' || (error as any).code === 'unavailable') {
+            await setDoc(userDocRef, { lastCheckIn: date }, { merge: true });
+        } else {
+             console.error("Error setting last check-in:", error);
+             throw error;
+        }
+    }
 };
