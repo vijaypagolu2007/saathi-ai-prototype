@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel dev:*",
+    "dev": "npm-run-all --parallel dev:genkit \"dev:next -- {@}\" --",
     "dev:genkit": "genkit start --port 4000",
     "dev:next": "next dev --port 3000",
     "build": "next build",
