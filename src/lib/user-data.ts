@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const getUserDocRef = (userId: string) => {
     return doc(db, 'users', userId);
@@ -31,11 +31,12 @@ export const setGrowthPoints = async (userId: string, points: number): Promise<v
         await setDoc(userDocRef, { growthPoints: points }, { merge: true });
     } catch (error) {
         console.error("Error setting growth points:", error);
-        // If the error is not due to being offline, re-throw it.
-        if ((error as any).code !== 'unavailable') {
-            throw error;
+        if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Growth points could not be saved.');
+            // Fail gracefully, don't re-throw
+            return;
         }
-        console.warn('Firestore is unavailable. Growth points could not be saved.');
+        throw error;
     }
 };
 
@@ -64,10 +65,11 @@ export const setLastCheckIn = async (userId: string, date: string): Promise<void
         await setDoc(userDocRef, { lastCheckIn: date }, { merge: true });
     } catch (error) {
          console.error("Error setting last check-in:", error);
-         // If the error is not due to being offline, re-throw it.
-         if ((error as any).code !== 'unavailable') {
-            throw error;
+         if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Last check-in could not be saved.');
+            // Fail gracefully, don't re-throw
+            return;
          }
-         console.warn('Firestore is unavailable. Last check-in could not be saved.');
+         throw error;
     }
 };

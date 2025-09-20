@@ -13,6 +13,10 @@ export const addJournalEntry = async (userId: string, entryData: Omit<JournalEnt
     });
   } catch (error) {
     console.error("Error adding journal entry: ", error);
+    if ((error as any).code === 'unavailable') {
+      console.warn('Firestore is unavailable. Journal entry could not be saved.');
+      return;
+    }
     throw new Error('Failed to add journal entry.');
   }
 };
@@ -62,6 +66,10 @@ export const addMoodEntry = async (userId: string, moodData: Omit<MoodEntry, 'id
         });
     } catch (error) {
         console.error("Error adding mood entry: ", error);
+        if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Mood entry could not be saved.');
+            return;
+        }
         throw new Error('Failed to add mood entry.');
     }
 };
