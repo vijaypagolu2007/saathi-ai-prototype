@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  transpilePackages: ['genkit', '@genkit-ai/googleai'],
   images: {
     remotePatterns: [
       {
