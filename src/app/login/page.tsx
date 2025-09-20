@@ -63,7 +63,7 @@ export default function LoginPage() {
       // On success, the useEffect above will handle the redirect.
     } catch (err: any) {
       console.error("🔥 Firebase Error:", err.code, err.message);
-      let errorMessage = "An unexpected error occurred. Please try again.";
+      let errorMessage = "Authentication failed. Please try again.";
       if (err.code) {
         switch (err.code) {
           case "auth/invalid-email":
@@ -84,8 +84,12 @@ export default function LoginPage() {
             // Don't show an error message if the user closes the popup
             errorMessage = "";
             break;
+          case "auth/auth-domain-config-required":
+          case "auth/unauthorized-domain":
+             errorMessage = "This domain is not authorized for authentication. Please contact support.";
+             break;
           default:
-            errorMessage = "Authentication failed. Please try again.";
+            errorMessage = "An unexpected error occurred. Please try again.";
         }
       }
       if (errorMessage) {
