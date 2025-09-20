@@ -19,6 +19,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 - [Node.js](https://nodejs.org/) (v18 or later)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - A [Firebase](https://firebase.google.com/) project
+- A [Google AI Studio API Key](https://aistudio.google.com/app/apikey)
 
 ### Installation
 
@@ -33,16 +34,23 @@ Follow these instructions to get a copy of the project up and running on your lo
     npm install
     ```
 
-3.  **Firebase Configuration:**
+3.  **Set up Environment Variables:**
+    You will need a `.env.local` file in the root of your project to store your API keys. Create this file and add the following, replacing `YOUR_API_KEY_HERE` with your actual key from Google AI Studio.
+
+    ```
+    GEMINI_API_KEY=YOUR_API_KEY_HERE
+    ```
+
+4.  **Firebase Configuration:**
     The Firebase configuration for this project is included directly in the source code. However, you will still need to set up your own Firebase project in the cloud to use features like Authentication and Firestore.
 
-4. **Enable Firebase Services:**
+5. **Enable Firebase Services:**
    a. Go to your [Firebase Console](https://console.firebase.google.com/).
    b. Create a new project (or use the project ID `saathiai-web`).
    c. In the Firebase Console, go to the **Authentication** section and enable the **Email/Password** and **Google** sign-in providers.
    d. Go to the **Firestore Database** section and create a new database. Start in **test mode** for initial development (you can secure it with security rules later).
 
-5.  **Run the development server:**
+6.  **Run the development server:**
     ```bash
     npm run dev
     ```
@@ -51,4 +59,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Deployment
 
-This application is ready to be deployed to platforms like [Vercel](https://vercel.com/) or [Firebase Hosting](https://firebase.google.com/docs/hosting). When deploying, you may want to move the Firebase configuration to environment variables for better security and flexibility.
+This application is ready to be deployed to platforms like [Vercel](https://vercel.com/) or [Firebase Hosting](https://firebase.google.com/docs/hosting). When deploying, you will need to configure your environment variables (like `GEMINI_API_KEY`) in your hosting provider's settings.
