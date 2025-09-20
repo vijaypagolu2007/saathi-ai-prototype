@@ -14,7 +14,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth: Auth = getAuth(app);
+const auth: Auth = getAuth(app, {
+  authDomain: "localhost",
+});
 const db: Firestore = getFirestore(app);
 
 // Enable offline persistence
