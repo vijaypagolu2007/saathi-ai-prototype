@@ -12,6 +12,7 @@ export type JournalEntry = {
   title: string;
   prompt: string;
   content: string;
+  summary?: string; // AI-generated summary
   analysis?: {
     mood: string;
     valence: number;

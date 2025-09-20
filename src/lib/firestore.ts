@@ -37,6 +37,7 @@ export const getJournalEntries = async (userId: string): Promise<JournalEntry[]>
         title: data.title || 'Untitled Entry',
         prompt: data.prompt,
         content: data.content,
+        summary: data.summary,
         analysis: data.analysis,
       } as JournalEntry);
     });

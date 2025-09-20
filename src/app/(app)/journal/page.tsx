@@ -10,11 +10,13 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import type { JournalEntry } from "@/lib/types";
 import { generateJournalPrompt } from "@/ai/flows/journal-prompt";
 import { analyzeMood } from "@/ai/flows/mood-analysis";
-import { WandSparkles, LoaderCircle, BrainCircuit } from "lucide-react";
+import { summarizeJournalEntry } from "@/ai/flows/summarize-entry";
+import { WandSparkles, LoaderCircle, BrainCircuit, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, ReferenceLine } from "recharts";
 import {
@@ -23,6 +25,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { Separator } from "@/components/ui/separator";
 import { subDays, format, parseISO, isSameDay } from "date-fns";
 import { useAuth } from "@/context/auth-context";
 import { addJournalEntry, getJournalEntries, addMoodEntry, getMoodEntries } from "@/lib/firestore";
@@ -98,6 +101,7 @@ export default function JournalPage() {
 
     let entryMoodName = selectedMood;
     let moodAnalysis = null;
+    let entrySummary = "";
 
     try {
       // Analyze mood from text if no mood is selected
@@ -112,6 +116,10 @@ export default function JournalPage() {
         });
       }
       
+      // Generate summary
+      const summaryResult = await summarizeJournalEntry({ content: journalText });
+      entrySummary = summaryResult.summary;
+      
       const finalMood = moods.find(m => m.name === entryMoodName) ?? moods.find(m => m.name === 'Neutral')!;
       
       // Save Mood Entry
@@ -125,6 +133,7 @@ export default function JournalPage() {
         title: journalTitle.trim() || `Journal Entry - ${new Date().toLocaleDateString()}`,
         prompt: prompt,
         content: journalText,
+        summary: entrySummary,
         analysis: moodAnalysis ?? undefined,
       };
 
@@ -352,8 +361,20 @@ export default function JournalPage() {
                       Prompt: "{entry.prompt}"
                     </p>
                   )}
-                  <p className="whitespace-pre-wrap line-clamp-6">{entry.content}</p>
+                  <p className="whitespace-pre-wrap line-clamp-4">{entry.content}</p>
                 </CardContent>
+                {entry.summary && (
+                  <>
+                  <Separator className="my-2" />
+                  <CardFooter className="flex-col items-start gap-2 pt-4">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <h4 className="font-semibold">AI Summary</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground italic">"{entry.summary}"</p>
+                  </CardFooter>
+                  </>
+                )}
               </Card>
             ))}
           </div>
