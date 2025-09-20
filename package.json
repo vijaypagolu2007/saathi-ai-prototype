@@ -4,13 +4,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel next:dev genkit:watch",
-    "next:dev": "next dev",
+    "dev": "genkit start --port 3100 & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "genkit:watch": "genkit start --port 3100",
     "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
