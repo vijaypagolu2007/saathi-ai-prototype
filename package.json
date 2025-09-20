@@ -1,18 +1,17 @@
+
 {
   "name": "saathi-ai-prototype",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "next:dev": "next dev -p 3000 --hostname 0.0.0.0",
-    "genkit:watch": "genkit start --port 3100 -- tsx --watch src/ai/dev.ts",
+    "dev": "npm-run-all --parallel next:dev genkit:watch",
+    "next:dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "genkit:dev": "genkit dev",
-    "deploy": "npm run build && firebase deploy",
-    "generate-sitemap": "node scripts/generate-sitemap.js"
+    "genkit:watch": "genkit start --port 3100",
+    "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
