@@ -7,7 +7,10 @@ const firebaseConfig = {
   "projectId": "saathiai-web",
   "appId": "1:1090333053745:web:102a70af9f5c2de7f45610",
   "apiKey": "AIzaSyANTCeu3Xv_fMPbUUmaZCcrOif6puC9Tio",
-  "authDomain": "saathiai-web.firebaseapp.com",
+  // "authDomain" is intentionally left out.
+  // When not specified, the SDK defaults to the domain of the app that is hosting the SDK,
+  // which will be localhost in this development environment.
+  // "authDomain": "saathiai-web.firebaseapp.com",
   "measurementId": "",
   "messagingSenderId": "1090333053745"
 };
