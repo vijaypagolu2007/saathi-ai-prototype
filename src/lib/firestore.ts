@@ -44,6 +44,11 @@ export const getJournalEntries = async (userId: string): Promise<JournalEntry[]>
     return entries;
   } catch (error) {
     console.error("Error getting journal entries: ", error);
+    // If offline and no cache, return empty array to prevent crash
+    if ((error as any).code === 'unavailable') {
+        console.warn('Firestore is unavailable. Returning empty journal entries.');
+        return [];
+    }
     throw new Error('Failed to get journal entries.');
   }
 };
@@ -83,6 +88,11 @@ export const getMoodEntries = async (userId: string): Promise<MoodEntry[]> => {
         return entries;
     } catch (error) {
         console.error("Error getting mood entries: ", error);
+        // If offline and no cache, return empty array to prevent crash
+        if ((error as any).code === 'unavailable') {
+            console.warn('Firestore is unavailable. Returning empty mood entries.');
+            return [];
+        }
         throw new Error('Failed to get mood entries.');
     }
 };
