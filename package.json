@@ -4,12 +4,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "genkit start & next dev",
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:genkit": "genkit start",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "deploy": "npm run build && firebase deploy"
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
