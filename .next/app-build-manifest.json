@@ -21,10 +21,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(app)/page.js"
     ],
-    "/(app)/tree/page": [
+    "/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(app)/tree/page.js"
+      "static/chunks/app/login/page.js"
     ]
   }
 }
