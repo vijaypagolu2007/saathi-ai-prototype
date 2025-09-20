@@ -1,28 +1,5 @@
 {
-  "node": {
-    "40e50c6f074199b556ee8af7dc9271f79d5ede3af1": {
-      "workers": {
-        "app/(app)/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fempathetic-chat.ts%22%2C%5B%7B%22id%22%3A%2240e50c6f074199b556ee8af7dc9271f79d5ede3af1%22%2C%22exportedName%22%3A%22empatheticChat%22%7D%5D%5D%2C%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fcrisis-detection.ts%22%2C%5B%7B%22id%22%3A%2240faf790a4efcafba412442d389a391a70dff3fb29%22%2C%22exportedName%22%3A%22detectCrisis%22%7D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/(app)/page": "action-browser"
-      }
-    },
-    "40faf790a4efcafba412442d389a391a70dff3fb29": {
-      "workers": {
-        "app/(app)/page": {
-          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fempathetic-chat.ts%22%2C%5B%7B%22id%22%3A%2240e50c6f074199b556ee8af7dc9271f79d5ede3af1%22%2C%22exportedName%22%3A%22empatheticChat%22%7D%5D%5D%2C%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fcrisis-detection.ts%22%2C%5B%7B%22id%22%3A%2240faf790a4efcafba412442d389a391a70dff3fb29%22%2C%22exportedName%22%3A%22detectCrisis%22%7D%5D%5D%5D&__client_imported__=true!",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/(app)/page": "action-browser"
-      }
-    }
-  },
+  "node": {},
   "edge": {},
   "encryptionKey": "77WL7qBoVph+g+mJsJd5T819WrTY1oOgSegbh9rGauE="
 }
