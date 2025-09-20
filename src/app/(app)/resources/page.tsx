@@ -1,13 +1,42 @@
 
+"use client";
+
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { generateMindfulMoment } from "@/ai/flows/mindful-moment";
+import { LoaderCircle, WandSparkles } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ResourcesPage() {
+  const [moment, setMoment] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateMoment = async () => {
+    setIsLoading(true);
+    setMoment("");
+    try {
+      const result = await generateMindfulMoment();
+      setMoment(result.moment);
+    } catch (error) {
+      console.error("Failed to generate mindful moment:", error);
+      toast({
+        title: "Error",
+        description: "Could not generate a moment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-headline">Self-Help Resources</h1>
@@ -15,6 +44,33 @@ export default function ResourcesPage() {
         Explore these exercises and practices to build resilience and improve
         your well-being.
       </p>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-headline">
+            A Mindful Moment
+          </CardTitle>
+          <CardDescription>
+            Feeling overwhelmed? Click the button for a quick, calming exercise.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-center">
+           <Button onClick={handleGenerateMoment} disabled={isLoading} size="lg">
+            {isLoading ? (
+              <LoaderCircle className="mr-2 animate-spin" />
+            ) : (
+              <WandSparkles className="mr-2" />
+            )}
+            {isLoading ? "Generating..." : "Generate a Mindful Moment"}
+          </Button>
+          
+          {moment && (
+             <blockquote className="mt-6 border-l-2 pl-6 italic">
+              "{moment}"
+            </blockquote>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
