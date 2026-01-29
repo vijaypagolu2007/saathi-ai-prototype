@@ -13,20 +13,22 @@
 /out/
 
 # Production
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build
 /build
+
+# Local Environment Variables
+.env
+.env*.local
+!.env.example
+
+# Misc
+.DS_Store
+*.pem
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Other
-.DS_Store
-*.pem
+# Firebase
+.firebase/
+firebase-debug.log
