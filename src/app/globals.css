@@ -15,7 +15,7 @@
     --secondary: 40 40% 92%; /* A soft, warm gray for secondary elements */
     --secondary-foreground: 20 15% 15%;
     --muted: 40 40% 90%; /* A lighter warm gray for muted text/backgrounds */
-    --muted-foreground: 20 15% 45%;
+    --muted-foreground: 20 15% 40%;
     --accent: 45 100% 70%; /* A warm, sunny yellow for accents */
     --accent-foreground: 20 15% 10%;
     --destructive: 0 84.2% 60.2%;
