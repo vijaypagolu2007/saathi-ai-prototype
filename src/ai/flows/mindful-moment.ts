@@ -25,7 +25,7 @@ export async function generateMindfulMoment(): Promise<MindfulMomentOutput> {
 
 const prompt = ai.definePrompt({
   name: 'mindfulMomentPrompt',
-  output: {schema: MindfulMomentOutputSchema},
+  output: {schema: MindfulMomentOutputSchema, format: 'json'},
   prompt: `You are a mental wellness assistant. Generate a single, short, and calming mindfulness exercise or a positive affirmation.
 
 The response should be 2-3 sentences long.
@@ -36,7 +36,7 @@ Examples:
 - "Think of one thing you are grateful for right now, no matter how small. Hold that feeling of gratitude in your heart for a moment."
 - "You are capable and resilient. Acknowledge one small success you've had today and allow yourself to feel proud."
 
-Generate a new mindful moment now.`,
+Generate a new mindful moment now, providing the output as a JSON object with a "moment" key.`,
 });
 
 const mindfulMomentFlow = ai.defineFlow(
