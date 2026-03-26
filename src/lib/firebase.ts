@@ -6,7 +6,7 @@ import { getFirestore, type Firestore, enableIndexedDbPersistence } from "fireba
 const firebaseConfig = {
   "projectId": "saathiai-web",
   "appId": "1:1090333053745:web:102a70af9f5c2de7f45610",
-  "apiKey": "AIzaSyANTCeu3Xv_fMPbUUmaZCcrOif6puC9Tio",
+  "apiKey": "your-api-key",
   "authDomain": "saathiai-web.firebaseapp.com",
   "measurementId": "",
   "messagingSenderId": "1090333053745"
