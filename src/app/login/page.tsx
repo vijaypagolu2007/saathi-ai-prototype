@@ -88,8 +88,18 @@ export default function LoginPage() {
           case "auth/unauthorized-domain":
              errorMessage = "This domain is not authorized for authentication. Please contact support.";
              break;
+          case "auth/operation-not-allowed":
+            errorMessage = "This sign-in method is not enabled yet. Please try another method.";
+            break;
+          case "auth/configuration-not-found":
+          case "auth/invalid-api-key":
+            errorMessage = "Sign-in is temporarily unavailable. Please try again later.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Network error. Check your connection and try again.";
+            break;
           default:
-            errorMessage = "An unexpected error occurred. Please try again.";
+            errorMessage = `Something went wrong (${err.code}). Please try again.`;
         }
       }
       if (errorMessage) {
